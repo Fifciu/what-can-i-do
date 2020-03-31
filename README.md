@@ -14,6 +14,7 @@ Idea:
 - Expandable
 - Short description
 - Detailed description
+- Source/s
 - Vote up
 - Vote down
 - Comments
