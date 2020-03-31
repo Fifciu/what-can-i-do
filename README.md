@@ -20,6 +20,7 @@ Idea:
 - Comments
 - Is accepted (only for me)
 - Remove btn (only for me)
+- Average price
 
 Add new idea btn
 Adding an idea:
