@@ -17,6 +17,12 @@ func main() {
 	router.HandleFunc("/",
 		controllers.HelloWorld).Methods("GET")
 
+	router.HandleFunc("/problems",
+		controllers.GetProblems).Methods("GET")
+
+	router.HandleFunc("/problems/{problemId}",
+		controllers.GetCertainProblem).Methods("GET")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8090"
