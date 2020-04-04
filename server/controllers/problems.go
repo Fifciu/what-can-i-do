@@ -9,13 +9,7 @@ import (
 	"github.com/fifciu/what-can-i-do/server/models"
 )
 
-func GetProblems(w http.ResponseWriter, r *http.Request) {
-	response := u.Status(true)
-	response["problems"] = models.GetAllProblems()
-	u.Respond(w, response)
-}
-
-func GetCertainProblem(w http.ResponseWriter, r *http.Request) {
+func getProblem(w http.ResponseWriter, r *http.Request, withIdeas bool) {
 	vars := mux.Vars(r)
 	response := u.Status(true)
 	problemId, err := strconv.Atoi(vars["problemId"])
@@ -24,14 +18,27 @@ func GetCertainProblem(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	problem := models.GetProblem(problemId, false)
+	problem := models.GetProblem(problemId, withIdeas)
 	if problem.ID == 0 {
 		response = u.Message(false, "Problem does not exist")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
 		response["problem"] = problem
-		response["sdsd"] = problem.ID
 	}
 
 	u.Respond(w, response)
+}
+
+func GetProblems(w http.ResponseWriter, r *http.Request) {
+	response := u.Status(true)
+	response["problems"] = models.GetAllProblems()
+	u.Respond(w, response)
+}
+
+func GetCertainProblem(w http.ResponseWriter, r *http.Request) {
+	getProblem(w, r, false)
+}
+
+func GetCertainProblemWithIdeas(w http.ResponseWriter, r *http.Request) {
+	getProblem(w, r, true)
 }

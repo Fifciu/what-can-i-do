@@ -5,6 +5,7 @@ type Problem struct {
 	Title   string    `json:"title"`
 	Description   string    `json:"description"`
 	IsAccepted bool `json:"is_accepted"`
+	Ideas []*Idea `json:"ideas" gorm:"foreignkey:ProblemID"`
 }
 
 func (problem Problem) TableName() string {
@@ -32,10 +33,13 @@ func GetAllProblems() []*Problem {
 
 func GetProblem(problemId int, withIdeas bool) *Problem {
 	problem := &Problem{}
-	if !withIdeas {
-		GetDB().Table("problems").Select("*").Where("id = ?", problemId).First(problem)
+
+	GetDB().Table("problems").Select("*").Where("id = ?", problemId).First(problem)
+	if withIdeas {
+		ideas := []*Idea{}
+		GetDB().Table("ideas").Select("*").Where("problem_id = ?", problemId).Scan(&ideas)
+		problem.Ideas = ideas
 	}
-	//GetDB().Table("message").Select("message.*, user.name").Joins("INNER JOIN user ON user.id = message.user_id").Scan(&messages)
 
 	return problem
 }
