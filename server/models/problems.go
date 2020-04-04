@@ -44,6 +44,15 @@ func GetProblem(problemId int, withIdeas bool) *Problem {
 	return problem
 }
 
+func ProblemExists(problemId uint) bool {
+	problem := &Problem{}
+	GetDB().Table("problems").Select("id").Where("id = ?", problemId).First(problem)
+	if problem.ID == problemId {
+		return true
+	}
+	return false
+}
+
 func (problem *Problem) Save(title string, description string) bool {
 	existingProblem := &Problem{}
 	GetDB().Table("problems").Select("*").Where("title = ?", title).First(existingProblem)

@@ -51,16 +51,29 @@ func AddProblem(w http.ResponseWriter, r *http.Request) {
 	problem := &models.Problem{}
 	err := json.NewDecoder(r.Body).Decode(problem)
 	response := u.Status(true)
-	code := 200
 
 	if err != nil {
-		response = u.Message(false, "Problem does not exist")
-		code = http.StatusBadRequest
+		response = u.Message(false, "Couldn't not add problem")
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
+	}
+
+	if len(problem.Title) < 4 {
+		response = u.Message(false, "Problem's title must have at least 4 characters")
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
+	}
+
+	if len(problem.Description) < 15 {
+		response = u.Message(false, "Problem's description must have at least 15 characters")
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
 	}
 
 	if !problem.Save(problem.Title, problem.Description) {
 		response = u.Message(false, "Problem with this title has already exists")
-		code = http.StatusBadRequest
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
 	}
-	u.RespondWithCode(w, response, code)
+	u.Respond(w, response)
 }

@@ -39,3 +39,17 @@ func GetProblemIdeas(problemId int) []*Idea {
 //
 //	return problem
 //}
+
+func (idea *Idea) Save(description string, price float32, problemID uint) bool {
+	existingIdea := &Idea{}
+	GetDB().Table("ideas").Select("*").Where("description = ? AND problem_id = ?", description, problemID).First(existingIdea)
+	if existingIdea.Description == description {
+		return false
+	}
+
+	idea.Price = price
+	idea.Description = description
+	idea.ProblemID = problemID
+	GetDB().Create(idea)
+	return true
+}
