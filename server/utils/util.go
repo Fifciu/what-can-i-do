@@ -20,6 +20,6 @@ func Respond(w http.ResponseWriter, data map[string]interface{}) {
 
 func RespondWithCode(w http.ResponseWriter, data map[string]interface{}, code int) {
 	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
 	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
 }
