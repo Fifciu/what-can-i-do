@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -13,15 +14,18 @@ func getProblem(w http.ResponseWriter, r *http.Request, withIdeas bool) {
 	vars := mux.Vars(r)
 	response := u.Status(true)
 	problemId, err := strconv.Atoi(vars["problemId"])
+
 	if problemId < 1 || err != nil {
 		response = u.Message(false, "Bad request")
-		w.WriteHeader(http.StatusBadRequest)
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
 	}
 
 	problem := models.GetProblem(problemId, withIdeas)
 	if problem.ID == 0 {
 		response = u.Message(false, "Problem does not exist")
-		w.WriteHeader(http.StatusNotFound)
+		u.RespondWithCode(w, response, http.StatusNotFound)
+		return
 	} else {
 		response["problem"] = problem
 	}
@@ -41,4 +45,22 @@ func GetCertainProblem(w http.ResponseWriter, r *http.Request) {
 
 func GetCertainProblemWithIdeas(w http.ResponseWriter, r *http.Request) {
 	getProblem(w, r, true)
+}
+
+func AddProblem(w http.ResponseWriter, r *http.Request) {
+	problem := &models.Problem{}
+	err := json.NewDecoder(r.Body).Decode(problem)
+	response := u.Status(true)
+	code := 200
+
+	if err != nil {
+		response = u.Message(false, "Problem does not exist")
+		code = http.StatusBadRequest
+	}
+
+	if !problem.Save(problem.Title, problem.Description) {
+		response = u.Message(false, "Problem with this title has already exists")
+		code = http.StatusBadRequest
+	}
+	u.RespondWithCode(w, response, code)
 }

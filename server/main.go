@@ -26,6 +26,9 @@ func main() {
 	router.HandleFunc("/problems/{problemId}/ideas",
 		controllers.GetCertainProblemWithIdeas).Methods("GET")
 
+	router.HandleFunc("/problems",
+		controllers.AddProblem).Methods("POST")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8090"
