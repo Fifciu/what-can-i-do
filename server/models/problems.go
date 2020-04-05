@@ -44,6 +44,14 @@ func GetProblem(problemId int, withIdeas bool) *Problem {
 	return problem
 }
 
+func GetProblemByQuery(searchQuery string) *Problem {
+	problem := &Problem{}
+	queryAsPart := "%" + searchQuery + "%"
+
+	GetDB().Table("problems").Select("*").Where("title LIKE ?", queryAsPart).First(problem)
+	return problem
+}
+
 func ProblemExists(problemId uint) bool {
 	problem := &Problem{}
 	GetDB().Table("problems").Select("id").Where("id = ?", problemId).First(problem)

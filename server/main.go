@@ -18,12 +18,15 @@ func main() {
 		controllers.HelloWorld).Methods("GET")
 
 	router.HandleFunc("/problems",
+		controllers.GetProblemByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
+
+	router.HandleFunc("/problems",
 		controllers.GetProblems).Methods("GET")
 
-	router.HandleFunc("/problems/{problemId}",
+	router.HandleFunc("/problems/{problemId:[0-9]+}",
 		controllers.GetCertainProblem).Methods("GET")
 
-	router.HandleFunc("/problems/{problemId}/ideas",
+	router.HandleFunc("/problems/{problemId:[0-9]+}/ideas",
 		controllers.GetCertainProblemWithIdeas).Methods("GET")
 
 	router.HandleFunc("/problems",
