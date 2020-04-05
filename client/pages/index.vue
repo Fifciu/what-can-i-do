@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div class="main-page">
+    <h1 class="page-title">What can I do?</h1>
+    <p class="page-description">Discover methods which allow one person to has real impact to the World and our future!</p>
     <a-input-search
       placeholder="Find problem and ideas"
       v-model="searchQuery"
@@ -69,5 +71,17 @@ export default Vue.extend({
 </script>
 
 <style>
+  .page-title {
+    font-size: 33px;
+    font-weight: bold;
+    text-align: center;
+  }
 
+  .page-description {
+    text-align: center;
+  }
+
+  .main-page {
+    padding: 24px;
+  }
 </style>
