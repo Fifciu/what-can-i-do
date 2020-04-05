@@ -8,9 +8,19 @@
     />
     <br /><br />
       <TransitionFadeExpand>
-        <div v-if="beenFinding && !!foundProblems.length">
-          Found
-        </div>
+        <a-list v-if="beenFinding && !!foundProblems.length" itemLayout="horizontal" :dataSource="foundProblems">
+          <a-list-item slot="renderItem" slot-scope="item, index">
+            <a
+              slot="actions"
+              @click="$router.push(`/problem/${item.id}`)"
+            >Details</a>
+            <a-list-item-meta
+              :description="item.description.slice(0, 20) + '...'"
+            >
+              <a slot="title" href="https://www.antdv.com/">{{item.title}}</a>
+            </a-list-item-meta>
+          </a-list-item>
+        </a-list>
         <a-alert
           v-else-if="beenFinding"
           message="No results"
