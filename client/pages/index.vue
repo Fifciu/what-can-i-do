@@ -54,6 +54,12 @@ export default Vue.extend({
 
     methods: {
       async onSearch() {
+          this.$router.push({
+              query: {
+                  ...this.$route.query,
+                  searchQuery: this.searchQuery
+              }
+          })
           if (!this.beenFinding) {
               this.beenFinding = true
           }
@@ -66,7 +72,22 @@ export default Vue.extend({
             console.log(err)
         }
       }
-    }
+    },
+
+    async asyncData ({ query, error, $axios }) {
+        try {
+            if (!query || !query.searchQuery || !query.searchQuery.length) {
+                return
+            }
+            let { problems } = await $axios.$get(`problems?searchQuery=${query.searchQuery}`)
+            return {
+                foundProblems: problems,
+                beenFinding: true
+            }
+        } catch (err) {
+            error({ statusCode: 404, message: err + 'Problem not found' })
+        }
+    },
 })
 </script>
 
