@@ -39,17 +39,17 @@ func GetProblems(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, response)
 }
 
-func GetProblemByQuery(w http.ResponseWriter, r *http.Request) {
+func GetProblemsByQuery(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	problem := models.GetProblemByQuery(vars["searchQuery"])
+	problems := models.GetProblemsByQuery(vars["searchQuery"])
 	response := u.Status(true)
 
-	if problem.ID == 0 {
-		response = u.Message(false, "Problem does not exist")
+	if len(problems) == 0 {
+		response = u.Message(false, "Nothing found")
 		u.RespondWithCode(w, response, http.StatusNotFound)
 		return
 	} else {
-		response["problem"] = problem
+		response["problems"] = problems
 	}
 	u.Respond(w, response)
 }

@@ -18,7 +18,7 @@ func main() {
 		controllers.HelloWorld).Methods("GET")
 
 	router.HandleFunc("/problems",
-		controllers.GetProblemByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
+		controllers.GetProblemsByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
 
 	router.HandleFunc("/problems",
 		controllers.GetProblems).Methods("GET")
