@@ -6,10 +6,14 @@
         <a-icon type="arrow-left" class="problem__back-icon" @click="$router.push('/')"/>
         <h2 class="problem__title">{{ problem.title }}</h2>
       </div>
-      <p class="problem__description">{{ problem.description }}</p>
+      <div class="problem__description">
+        <h2 class="problem__section-heading">Description</h2>
+        <p>{{ problem.description }}</p>
+      </div>
     </div>
 
     <div class="problem__ideas">
+      <h2 class="problem__section-heading">Ideas</h2>
       <a-list
         v-if="problem.ideas.length"
         class="comment-list"
@@ -179,7 +183,7 @@
     }
 
     &__ideas {
-      padding: 0 6px 6px;
+      padding: 10px 30px;
     }
 
     &__no-ideas {
@@ -217,6 +221,10 @@
       font-size: 18px;
       line-height: 1.6;
       padding: 10px 30px;
+    }
+
+    &__section-heading {
+      font-size: 30px;
     }
   }
 </style>

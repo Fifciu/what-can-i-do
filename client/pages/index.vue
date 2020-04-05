@@ -82,7 +82,8 @@ export default Vue.extend({
             let { problems } = await $axios.$get(`problems?searchQuery=${query.searchQuery}`)
             return {
                 foundProblems: problems,
-                beenFinding: true
+                beenFinding: true,
+                searchQuery: query.searchQuery
             }
         } catch (err) {
             error({ statusCode: 404, message: err + 'Problem not found' })
