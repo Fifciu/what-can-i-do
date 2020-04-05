@@ -7,22 +7,52 @@
       enterButton
     />
     <br /><br />
-  </div>
+      <TransitionFadeExpand>
+        <div v-if="beenFinding && !!foundProblems.length">
+          Found
+        </div>
+        <a-alert
+          v-else-if="beenFinding"
+          message="No results"
+          description="Query returned 0 results"
+          type="error"
+          showIcon
+        />
+      </TransitionFadeExpand>
+    </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import TransitionFadeExpand from '~/components/TransitionFadeExpand.vue'
 
 export default Vue.extend({
+
+    components: {
+        TransitionFadeExpand
+    },
+
     data () {
         return {
-            searchQuery: ''
+            searchQuery: '',
+            foundProblems: [],
+            beenFinding: false
         }
     },
 
     methods: {
       async onSearch() {
-        await this.$axios.$get('/')
+          if (!this.beenFinding) {
+              this.beenFinding = true
+          }
+
+          try {
+            let { problems } = await this.$axios.$get(`problems?searchQuery=${this.searchQuery.trim()}`)
+            this.foundProblems = problems
+        } catch (err) {
+            this.foundProblems = []
+            console.log(err)
+        }
       }
     }
 })
