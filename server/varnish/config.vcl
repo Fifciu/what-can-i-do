@@ -68,6 +68,6 @@ sub vcl_deliver {
     unset resp.http.X-Url;
     unset resp.http.X-Host;
     # Comment these for easier Drupal cache tag debugging in development.
-    unset resp.http.X-Cache-Tags;
+//    unset resp.http.X-Cache-Tags;
     unset resp.http.X-Cache-Contexts;
 }

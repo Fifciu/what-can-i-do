@@ -15,11 +15,13 @@ func Status(status bool) map[string]interface{} {
 
 func Respond(w http.ResponseWriter, data map[string]interface{}) {
 	w.Header().Add("Content-Type", "application/json")
+	PopulateCacheTags(w, data)
 	json.NewEncoder(w).Encode(data)
 }
 
 func RespondWithCode(w http.ResponseWriter, data map[string]interface{}, code int) {
 	w.Header().Add("Content-Type", "application/json")
+	PopulateCacheTags(w, data)
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)
 }

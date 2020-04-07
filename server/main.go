@@ -6,12 +6,27 @@ import (
 	"os"
 
 	controllers "github.com/fifciu/what-can-i-do/server/controllers"
+	//middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 func main() {
+
+	//User:
+	//	Id
+	//	Fullname
+	//	Email
+	//	Password
+	//	CreatedAt
+	//	<smth from fb/google/linkedin?>
+	//
+	//Vote:
+	//	Id
+	//	IdeaID
+	//	IsPlus
+
 	router := mux.NewRouter()
 
 	router.HandleFunc("/",
@@ -26,8 +41,8 @@ func main() {
 	router.HandleFunc("/problems/{problemId:[0-9]+}",
 		controllers.GetCertainProblem).Methods("GET")
 
-	router.HandleFunc("/problems/{problemId:[0-9]+}/ideas",
-		controllers.GetCertainProblemWithIdeas).Methods("GET")
+	router.Handle("/problems/{problemId:[0-9]+}/ideas",
+			http.HandlerFunc(controllers.GetCertainProblemWithIdeas)).Methods("GET")
 
 	router.HandleFunc("/problems",
 		controllers.AddProblem).Methods("POST")
