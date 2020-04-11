@@ -8,9 +8,9 @@ services:
     volumes:
       - mariadb-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_ROOT_PASSWORD: ${db_pass}
     ports:
-      - 3306:3306
+      - ${db_port}:3306
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest

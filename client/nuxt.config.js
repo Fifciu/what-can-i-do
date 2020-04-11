@@ -1,4 +1,4 @@
-const USE_VARNISH_API = false
+require('dotenv').config({path: '../server/.env'})
 
 export default {
   mode: 'universal',
@@ -15,6 +15,11 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
+  },
+
+  server: {
+    port: process.env.pwa_port,
+    host: process.env.pwa_host
   },
 
   // pageTransition: 'fade',
@@ -40,6 +45,12 @@ export default {
   */
   buildModules: [
     '@nuxt/typescript-build',
+      [
+        '@nuxtjs/dotenv',
+        {
+          path: '../server'
+        }
+      ]
   ],
   /*
   ** Nuxt.js modules
@@ -54,7 +65,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: USE_VARNISH_API ? 'http://localhost:1234/' : 'http://localhost:8090/'
+    baseURL: process.env.use_varnish ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.api_port}/`
   },
   /*
   ** Build configuration

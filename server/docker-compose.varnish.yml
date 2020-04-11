@@ -5,4 +5,4 @@ services:
     volumes:
       - ./varnish/config.vcl:/usr/local/etc/varnish/default.vcl
     ports:
-      - 1234:80
+      - ${varnish_port}:80

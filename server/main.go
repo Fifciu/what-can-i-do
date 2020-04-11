@@ -10,6 +10,8 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
 )
 
 func main() {
@@ -26,6 +28,11 @@ func main() {
 	//	Id
 	//	IdeaID
 	//	IsPlus
+
+	gomniauth.SetSecurityKey("SOME_AUTH_KEY")
+	gomniauth.WithProviders(
+		google.New("key", "secret", "callback"),
+	)
 
 	router := mux.NewRouter()
 
@@ -50,7 +57,7 @@ func main() {
 	router.HandleFunc("/ideas",
 		controllers.AddIdea).Methods("POST")
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("api_port")
 	if port == "" {
 		port = "8090"
 	}
