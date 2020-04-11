@@ -199,7 +199,11 @@ export default {
                 searchQuery: query.searchQuery
             }
         } catch (err) {
-            error({ statusCode: 404, message: err + 'Problem not found' })
+            return {
+                foundProblems: [],
+                beenFinding: true,
+                searchQuery: query.searchQuery
+            }
         }
     },
 }
