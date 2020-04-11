@@ -16,7 +16,8 @@
     "@nuxtjs/pwa": "^3.0.0-0",
     "ant-design-vue": "^1.1.10",
     "moment": "^2.24.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "vuex-module-decorators": "^0.16.1"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.6.0",

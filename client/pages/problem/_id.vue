@@ -64,7 +64,14 @@
       </div>
 
       <TransitionFadeExpand>
-        <a-form :form="form" v-if="showAddIdea" class="problem__add-ideas-form">
+        <div v-if="isAddingIdea">
+          <a-spin />
+        </div>
+        <div v-else-if="addedIdea">
+          <h2>Succesfully added an idea</h2>
+          <p>Thank you. We are really glad you took part in our project! We are going to analyze your idea before publishing it to prevent fake newses.</p>
+        </div>
+        <a-form :form="form" v-else-if="showAddIdea" class="problem__add-ideas-form">
           <h2>New idea</h2>
           <a-form-item
             :label-col="formItemLayout.labelCol"
@@ -73,9 +80,14 @@
           >
             <a-textarea
               v-decorator="[
-              'description',
-              { rules: [{ required: true, message: 'Please input idea\'s description' }] },
-            ]"
+                'description',
+                { rules:
+                  [
+                    { required: true, message: 'Please input idea\'s description' },
+                    { validator: (rule, value) => value.length >= 15 || !value.length, message: 'Description should have at least 15 chars' }
+                  ]
+                },
+              ]"
               placeholder="Please input idea's description"
               :autoSize="{ minRows: 3, maxRows: 5 }"
             />
@@ -86,16 +98,24 @@
             label="Price"
           >
             <a-input-number
-              :defaultValue="0"
+              v-decorator="[
+                'price',
+                { initialValue: 0 }
+              ]"
+              :min="0"
               :formatter="value => `$ ${(+value/100).toFixed(2)}`"
               :parser="value => value.replace('$ ', '').replace('.','')"
             />
           </a-form-item>
         </a-form>
+
       </TransitionFadeExpand>
 
       <div class="problem__add-btn-wrapper">
-        <a-button type="primary" class="problem__add-btn" @click.native="onclickAddIdea">Add an idea</a-button>
+        <a-button type="primary" class="problem__add-btn" @click.native="onclickAddIdea">
+          <template v-if="addedIdea">Add another idea</template>
+          <template v-else>Add an idea</template>
+        </a-button>
       </div>
     </div>
   </div>
@@ -123,10 +143,13 @@
             return {
                 showAddIdea: false,
 
-                checkNick: false,
                 formItemLayout,
                 formTailLayout,
-                form: this.$form.createForm(this, { name: 'dynamic_rule' })
+                form: this.$form.createForm(this, { name: 'dynamic_rule' }),
+
+                addedIdea: false,
+                isAddingIdea: false
+
             }
         },
         async asyncData ({ params, error, $axios }) {
@@ -149,23 +172,37 @@
             onclickAddIdea () {
                 if (!this.showAddIdea) {
                     this.showAddIdea = true
+                    this.addedIdea = false
                 } else {
                     this.check()
                 }
             },
             check() {
-                this.form.validateFields(err => {
+                this.form.validateFields(async err => {
                     if (!err) {
-                        console.info('success');
+                        const { description, price } = this.form.getFieldsValue(['description', 'price'])
+                        console.info('success', description, price/100);
+                        this.isAddingIdea = true
+                        try {
+                            await this.$axios.post('/ideas', {
+                                problem_id: Number(this.$route.params.id),
+                                description,
+                                price: price / 100
+                            })
+
+                            this.addedIdea = true
+                            this.showAddIdea = false
+
+                        } catch (err) {
+                            this.$notification.error({
+                                message: 'Error',
+                                description: err.response.data.message
+                            });
+                        }
+                        this.isAddingIdea = false
                     }
                 });
-            },
-            handleChange(e) {
-                this.checkNick = e.target.checked;
-                this.$nextTick(() => {
-                    this.form.validateFields(['nickname'], { force: true });
-                });
-            },
+            }
         }
     }
 </script>

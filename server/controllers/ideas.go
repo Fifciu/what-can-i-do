@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	u "github.com/fifciu/what-can-i-do/server/utils"
@@ -14,6 +15,7 @@ func AddIdea(w http.ResponseWriter, r *http.Request) {
 	response := u.Status(true)
 
 	if err != nil {
+		fmt.Println(err)
 		response = u.Message(false, "Could not add an idea")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
@@ -33,6 +35,12 @@ func AddIdea(w http.ResponseWriter, r *http.Request) {
 
 	if len(idea.Description) < 15 {
 		response = u.Message(false, "Problem's description must have at least 15 characters")
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
+	}
+
+	if idea.Price < 0 {
+		response = u.Message(false, "Problem's price be bigger or equal $0")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}

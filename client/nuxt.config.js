@@ -1,3 +1,4 @@
+const USE_VARNISH_API = false
 
 export default {
   mode: 'universal',
@@ -53,7 +54,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://localhost:8090/'
+    baseURL: USE_VARNISH_API ? 'http://localhost:1234/' : 'http://localhost:8090/'
   },
   /*
   ** Build configuration
