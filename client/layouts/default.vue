@@ -4,12 +4,17 @@
         <a-menu
           theme="dark"
           mode="horizontal"
-          :defaultSelectedKeys="['0']"
+          :selectedKeys="selectedNavItem"
           :style="{ lineHeight: '64px' }"
         >
-          <a-menu-item key="1">Home</a-menu-item>
+          <a-menu-item key="1">
+            <nuxt-link to="/">
+              Home
+            </nuxt-link>
+          </a-menu-item>
           <a-menu-item key="2">About</a-menu-item>
-          <a-menu-item key="3">Join Us</a-menu-item>
+          <a-menu-item key="3">Join us</a-menu-item>
+          <a-menu-item key="4">Sign in</a-menu-item>
         </a-menu>
       </a-layout-header>
 
@@ -28,7 +33,7 @@
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        Whatcanido ©2020 Created by <a href="https://fifciuu.com" target="_blank">Fifciuu</a>
+        Whatcanido.club ©2020 Created by <a href="https://fifciuu.com" target="_blank">Fifciuu</a>
       </a-layout-footer>
     </a-layout>
 </template>
@@ -55,6 +60,12 @@
                   })
               }
               return breadcrumbs
+          },
+          selectedNavItem () {
+            if (this.$route.name == 'index') {
+                return ['1']
+            }
+            return []
           }
       }
   }
@@ -77,7 +88,11 @@
   }
 
   .ant-layout-header {
-    padding: 0 35px;
+    padding: 0 10px;
+  }
+
+  .ant-menu-item {
+    padding: 0 15px;
   }
 
 </style>
