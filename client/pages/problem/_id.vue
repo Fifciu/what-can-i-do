@@ -2,12 +2,8 @@
   <div class="problem">
 
     <div class="problem__details">
-      <div class="problem__heading">
-        <a-icon type="arrow-left" class="problem__back-icon" @click="$router.push('/')"/>
-        <h2 class="problem__title">{{ problem.name }}</h2>
-      </div>
       <div class="problem__description">
-        <h2 class="problem__section-heading">Description</h2>
+        <h2 class="problem__section-heading">{{ problem.name }}</h2>
         <p>{{ problem.description }}</p>
       </div>
     </div>
@@ -152,9 +148,10 @@
 
             }
         },
-        async asyncData ({ params, error, $axios }) {
+        async asyncData ({ store, params, error, $axios }) {
             try {
                 let { data } = await $axios.get(`/problems/${params.id}/ideas`)
+                store.dispatch('breadcrumbs/changeTitle', data.problem.name)
                 return {
                      problem: {
                          ...data.problem,

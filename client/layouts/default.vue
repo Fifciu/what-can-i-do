@@ -12,7 +12,17 @@
           <a-menu-item key="3">Join Us</a-menu-item>
         </a-menu>
       </a-layout-header>
+
       <a-layout-content class="main-wrapper">
+        <a-breadcrumb style="margin: 0px 0px 16px" v-if="showBreadrcrumbs">
+          <a-breadcrumb-item
+            v-for="item in breadcrumbs"
+            :key="item.title"
+            @click.native="'path' in item ? $router.push(item.path) : null"
+          >
+            {{ item.title }}
+          </a-breadcrumb-item>
+        </a-breadcrumb>
         <div :style="{ background: '#fff', height: '100%' }">
           <nuxt />
         </div>
@@ -22,6 +32,33 @@
       </a-layout-footer>
     </a-layout>
 </template>
+
+<script>
+  export default {
+      computed: {
+          showBreadrcrumbs () {
+              const allowedRoutes = [
+                  'problem-id'
+              ]
+              return allowedRoutes.includes(this.$route.name)
+          },
+          breadcrumbs () {
+              const breadcrumbs = [
+                  {
+                      title: 'Home',
+                      path: '/'
+                  }
+              ]
+              if (!!this.$store.state.breadcrumbs.currentRouteTitle) {
+                  breadcrumbs.push({
+                      title: this.$store.state.breadcrumbs.currentRouteTitle
+                  })
+              }
+              return breadcrumbs
+          }
+      }
+  }
+</script>
 
 <style>
   #components-layout-demo-top {
