@@ -4,7 +4,7 @@ type Problem struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	Title   string    `json:"title"`
 	Description   string    `json:"description"`
-	IsAccepted bool `json:"is_accepted"`
+	IsPublished bool `json:"is_published"`
 	Ideas []*Idea `json:"ideas" gorm:"foreignkey:ProblemID"`
 }
 
@@ -26,7 +26,7 @@ func (problem Problem) TableName() string {
 
 func GetAllProblems() []*Problem {
 	problems := []*Problem{}
-	GetDB().Table("problems").Select("*").Scan(&problems)
+	GetDB().Table("problems").Select("*").Where("is_published = 1").Scan(&problems)
 
 	return problems
 }
@@ -34,10 +34,10 @@ func GetAllProblems() []*Problem {
 func GetProblem(problemId int, withIdeas bool) *Problem {
 	problem := &Problem{}
 
-	GetDB().Table("problems").Select("*").Where("id = ?", problemId).First(problem)
+	GetDB().Table("problems").Select("*").Where("id = ? AND is_published = 1", problemId).First(problem)
 	if withIdeas {
 		ideas := []*Idea{}
-		GetDB().Table("ideas").Select("*").Where("problem_id = ?", problemId).Scan(&ideas)
+		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
 		problem.Ideas = ideas
 	}
 
@@ -48,13 +48,13 @@ func GetProblemsByQuery(searchQuery string) []*Problem {
 	problems := []*Problem{}
 	queryAsPart := "%" + searchQuery + "%"
 
-	GetDB().Table("problems").Select("*").Where("title LIKE ?", queryAsPart).Scan(&problems)
+	GetDB().Table("problems").Select("*").Where("title LIKE ? AND is_published = 1", queryAsPart).Scan(&problems)
 	return problems
 }
 
 func ProblemExists(problemId uint) bool {
 	problem := &Problem{}
-	GetDB().Table("problems").Select("id").Where("id = ?", problemId).First(problem)
+	GetDB().Table("problems").Select("id").Where("id = ? AND is_published = 1", problemId).First(problem)
 	if problem.ID == problemId {
 		return true
 	}
@@ -63,7 +63,7 @@ func ProblemExists(problemId uint) bool {
 
 func (problem *Problem) Save(title string, description string) bool {
 	existingProblem := &Problem{}
-	GetDB().Table("problems").Select("*").Where("title = ?", title).First(existingProblem)
+	GetDB().Table("problems").Select("*").Where("title = ? AND is_published = 1", title).First(existingProblem)
 
 	if existingProblem.Title == title {
 		return false
