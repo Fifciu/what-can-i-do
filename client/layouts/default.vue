@@ -1,5 +1,17 @@
 <template>
     <a-layout id="components-layout-demo-top" class="layout">
+      <a-layout-header>
+        <a-menu
+          theme="dark"
+          mode="horizontal"
+          :defaultSelectedKeys="['0']"
+          :style="{ lineHeight: '64px' }"
+        >
+          <a-menu-item key="1">Home</a-menu-item>
+          <a-menu-item key="2">About</a-menu-item>
+          <a-menu-item key="3">Join Us</a-menu-item>
+        </a-menu>
+      </a-layout-header>
       <a-layout-content class="main-wrapper">
         <div :style="{ background: '#fff', height: '100%' }">
           <nuxt />
@@ -25,6 +37,10 @@
 
   .main-wrapper {
     padding: 20px;
+  }
+
+  .ant-layout-header {
+    padding: 0 35px;
   }
 
 </style>
