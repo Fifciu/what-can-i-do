@@ -2,7 +2,7 @@ package models
 
 type Problem struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
-	Title   string    `json:"title"`
+	Name   string    `json:"name"`
 	Description   string    `json:"description"`
 	IsPublished bool `json:"is_published"`
 	Ideas []*Idea `json:"ideas" gorm:"foreignkey:ProblemID"`
@@ -48,7 +48,7 @@ func GetProblemsByQuery(searchQuery string) []*Problem {
 	problems := []*Problem{}
 	queryAsPart := "%" + searchQuery + "%"
 
-	GetDB().Table("problems").Select("*").Where("title LIKE ? AND is_published = 1", queryAsPart).Scan(&problems)
+	GetDB().Table("problems").Select("*").Where("name LIKE ? AND is_published = 1", queryAsPart).Scan(&problems)
 	return problems
 }
 
@@ -61,15 +61,15 @@ func ProblemExists(problemId uint) bool {
 	return false
 }
 
-func (problem *Problem) Save(title string, description string) bool {
+func (problem *Problem) Save(name string, description string) bool {
 	existingProblem := &Problem{}
-	GetDB().Table("problems").Select("*").Where("title = ? AND is_published = 1", title).First(existingProblem)
+	GetDB().Table("problems").Select("*").Where("name = ? AND is_published = 1", name).First(existingProblem)
 
-	if existingProblem.Title == title {
+	if existingProblem.Name == name {
 		return false
 	}
 
-	problem.Title = title
+	problem.Name = name
 	problem.Description = description
 	GetDB().Create(problem)
 	return true

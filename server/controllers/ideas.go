@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	u "github.com/fifciu/what-can-i-do/server/utils"
@@ -15,7 +14,6 @@ func AddIdea(w http.ResponseWriter, r *http.Request) {
 	response := u.Status(true)
 
 	if err != nil {
-		fmt.Println(err)
 		response = u.Message(false, "Could not add an idea")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return

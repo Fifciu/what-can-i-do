@@ -73,8 +73,8 @@ func AddProblem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(problem.Title) < 4 {
-		response = u.Message(false, "Problem's title must have at least 4 characters")
+	if len(problem.Name) < 4 {
+		response = u.Message(false, "Problem's name must have at least 4 characters")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}
@@ -85,8 +85,8 @@ func AddProblem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !problem.Save(problem.Title, problem.Description) {
-		response = u.Message(false, "Problem with this title has already exists")
+	if !problem.Save(problem.Name, problem.Description) {
+		response = u.Message(false, "Problem with this name has already exists")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}
