@@ -15,6 +15,7 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
     "ant-design-vue": "^1.1.10",
+    "js-cookie": "^2.2.1",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0",
     "vuex-module-decorators": "^0.16.1"

@@ -1,5 +1,12 @@
 <template>
   <div>
+    <a-alert
+      message="Error"
+      description="Could not authenticate"
+      type="error"
+      showIcon
+      v-if="$route.query && 'error' in $route.query"
+    />
     <a-button @click.native="googleInitAuth">Google auth</a-button>
   </div>
 </template>

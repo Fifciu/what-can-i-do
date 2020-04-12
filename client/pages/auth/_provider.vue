@@ -5,7 +5,8 @@
 <script>
     export default {
         name: "Provider",
-        async asyncData({ $axios, route, redirect, env }) {
+        async asyncData(context) {
+            const { $axios, route, redirect, env, store } = context
             const supportedProviders = env.supported_oauth_providers.split(',')
             if (!supportedProviders.includes(route.params.provider)) {
                 redirect('/')
@@ -23,18 +24,22 @@
                     }
                     url += `${key}=${value}`
                 }
-                // console.log(url)
                 let response = await $axios.post(url)
-                console.log(response.data)
+                const respData = response.data
                 const user = response.data.user
-                return {
-                    user
-                }
+                store.dispatch('auth/setCredentials', {
+                    expiresIn: respData.expires_in,
+                    token: respData.token
+                })
+                store.dispatch('auth/setUserdata', {
+                    email:  user.email,
+                    user: user.name
+                })
+
+                redirect('/profile')
             } catch (err) {
                 console.log(err.response)
-                return {
-                    user: 'lol'
-                }
+                redirect('/join-us?error')
             }
         }
     }
