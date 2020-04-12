@@ -8,9 +8,21 @@ import (
 	"github.com/stretchr/objx"
 	u "github.com/fifciu/what-can-i-do/server/utils"
 	"github.com/fifciu/what-can-i-do/server/models"
+	"github.com/dgrijalva/jwt-go"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
+
+type Claims struct {
+	Fullname string `json:"fullname"`
+	Email string `json:"email"`
+	jwt.StandardClaims
+}
+
+var jwtSecretKey = os.Getenv("jwt_key")
+var jwtKey = []byte(jwtSecretKey)
 
 func acceptedProvider (w http.ResponseWriter, r *http.Request) bool {
 	vars := mux.Vars(r)
@@ -100,8 +112,34 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 	databaseUser := &models.User{}
 	databaseUser.Save(user.Email(), user.Name(), vars["provider"])
 
-	// Create jwt here and add to response
-	response["token"] = "thereWillBeJwt"
+	jwtTtlString := os.Getenv("jwt_ttl")
+	jwtTtl, err := strconv.Atoi(jwtTtlString)
+	if err != nil {
+		response := u.Message(false, "Could not read JWT TTL")
+		u.RespondWithCode(w, response, http.StatusInternalServerError)
+		return
+	}
+	if jwtTtl == 0 {
+		jwtTtl = 5
+	}
+	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
+	claims := &Claims{
+		Fullname: user.Name(),
+		Email: user.Email(),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Create the JWT string
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		// If there is an error in creating the JWT return an internal server error
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	response["token"] = tokenString
+	response["expires_in"] = expirationTime.Sub(time.Now()).Milliseconds()
 
 	u.RespondWithCode(w, response, http.StatusOK)
 }
