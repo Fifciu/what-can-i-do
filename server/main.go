@@ -29,9 +29,20 @@ func main() {
 	//	IdeaID
 	//	IsPlus
 
+	pwaProtocol := os.Getenv("pwa_protocol")
+	pwaHost := os.Getenv("pwa_host")
+	pwaPort := os.Getenv("pwa_port")
+	pwaBaseUrl := pwaProtocol + "://" + pwaHost
+	if pwaPort != "" {
+		pwaBaseUrl = pwaBaseUrl + ":" + pwaPort
+	}
+	pwaBaseUrl = pwaBaseUrl + "/"
+
 	gomniauth.SetSecurityKey("SOME_AUTH_KEY")
+	googleClientId := os.Getenv("google_client_id")
+	googleClientSecret := os.Getenv("google_client_secret")
 	gomniauth.WithProviders(
-		google.New("key", "secret", "callback"),
+		google.New(googleClientId, googleClientSecret, pwaBaseUrl + "auth/google"),
 	)
 
 	router := mux.NewRouter()
@@ -56,6 +67,12 @@ func main() {
 
 	router.HandleFunc("/ideas",
 		controllers.AddIdea).Methods("POST")
+
+	router.HandleFunc("/auth/init/{provider}",
+		controllers.InitAuth).Methods("POST")
+
+	router.HandleFunc("/auth/complete/{provider}",
+		controllers.CompleteAuth).Methods("POST")
 
 	port := os.Getenv("api_port")
 	if port == "" {

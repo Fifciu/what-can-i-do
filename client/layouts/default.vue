@@ -13,7 +13,11 @@
             </nuxt-link>
           </a-menu-item>
           <a-menu-item key="2">About</a-menu-item>
-          <a-menu-item key="3">Join us</a-menu-item>
+          <a-menu-item key="3">
+            <nuxt-link to="/join-us">
+              Join us
+            </nuxt-link>
+          </a-menu-item>
           <a-menu-item key="4">Sign in</a-menu-item>
         </a-menu>
       </a-layout-header>

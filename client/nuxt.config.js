@@ -65,7 +65,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.use_varnish ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.api_port}/`
+    baseURL: process.env.use_varnish === '1' ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.api_port}/`
   },
   /*
   ** Build configuration
