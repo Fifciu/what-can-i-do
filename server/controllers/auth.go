@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/objx"
 	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 	"os"
 	"strings"
 )
@@ -74,12 +75,6 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
-	//queryParams, err := objx.FromURLQuery(r.URL.RawQuery)
-	//if err != nil {
-	//	response := u.Message(false, "Malformed URL")
-	//	u.RespondWithCode(w, response, http.StatusBadRequest)
-	//	return
-	//}
 	tmp := map[string]interface{}{"code": r.URL.Query().Get("code")}
 	queryParams := objx.Map(tmp)
 	creds, err := provider.CompleteAuth(queryParams)
@@ -101,5 +96,12 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		"name": user.Name(),
 		"nickname": user.Nickname(),
 	}
+
+	databaseUser := &models.User{}
+	databaseUser.Save(user.Email(), user.Name(), vars["provider"])
+
+	// Create jwt here and add to response
+	response["token"] = "thereWillBeJwt"
+
 	u.RespondWithCode(w, response, http.StatusOK)
 }
