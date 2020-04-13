@@ -1,12 +1,14 @@
 <template>
   <div>
     Welciome
+    {{ $store.state.auth }}
   </div>
 </template>
 
 <script>
     export default {
-        name: "Profile"
+        name: "Profile",
+        middleware: 'auth'
     }
 </script>
 
