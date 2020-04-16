@@ -4,7 +4,7 @@ import Cookie from 'js-cookie'
 
 export const state = () => ({
   token: '',
-  expiresIn: '',
+  expiresAt: '',
   user: {
     email: '',
     name: ''
@@ -18,9 +18,9 @@ export const getters: GetterTree<AuthState, RootState> = {
 }
 
 export const mutations: MutationTree<AuthState> = {
-  SET_CREDENTIALS: (state, { token, expiresIn }) => {
+  SET_CREDENTIALS: (state, { token, expiresAt }) => {
     state.token = token
-    state.expiresIn = expiresIn
+    state.expiresAt = expiresAt
   },
   SET_USERDATA: (state, { email, name }) => {
     state.user.email = email
@@ -29,21 +29,21 @@ export const mutations: MutationTree<AuthState> = {
 }
 
 export const actions: ActionTree<AuthState, RootState> = {
-  setCredentials({ commit }, { token, expiresIn}) {
-    commit('SET_CREDENTIALS', { token, expiresIn })
+  setCredentials({ commit }, { token, expiresAt}) {
+    commit('SET_CREDENTIALS', { token, expiresAt })
   },
   setUserdata({ commit }, { email, name }) {
     commit('SET_USERDATA', { email, name })
   },
   setCookieTokenFromState({ state }) {
     const jwtOffset = Number(process.env.jwt_offset) || 0
-    const uselessTokenDate = new Date(new Date().getTime() + state.expiresIn + jwtOffset * 60 * 1000);
+    const uselessTokenDate = new Date(new Date().getTime() + state.expiresAt + jwtOffset * 60 * 1000);
     Cookie.set('token', state.token, { expires: uselessTokenDate})
-    Cookie.set('token_expires_in', state.expiresIn, { expires: uselessTokenDate})
+    Cookie.set('token_expires_at', state.expiresAt, { expires: uselessTokenDate})
   },
   setStateTokenFromCookie({ commit }) {
     const token = Cookie.get('token')
-    const expiresIn = Cookie.get('token_expires_in')
-    commit('SET_CREDENTIALS', { token, expiresIn })
+    const expiresAt = Cookie.get('token_expires_at')
+    commit('SET_CREDENTIALS', { token, expiresAt })
   }
 }

@@ -11,16 +11,16 @@ export type RootState = ReturnType<typeof state>
 export const actions: ActionTree<BreadcrumbsState, RootState> = {
   nuxtServerInit ({ dispatch, commit }, { req }) {
     let token = null
-    let expiresIn = null
+    let expiresAt = null
     if (req.headers.cookie) {
       const parsed = cookieparser.parse(req.headers.cookie)
       try {
         token = parsed.token
-        expiresIn = parsed.token_expires_in
+        expiresAt = parsed.token_expires_at
 
         dispatch('auth/setCredentials', {
           token,
-          expiresIn
+          expiresAt
         }, {
           root: true
         })

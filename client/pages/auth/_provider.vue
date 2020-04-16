@@ -38,7 +38,7 @@
                 let { data } = await this.$axios.post(url)
                 const user = data.user
                 this.$store.dispatch('auth/setCredentials', {
-                    expiresIn: data.expires_in,
+                    expiresAt: data.expires_at,
                     token: data.token
                 })
                 this.$store.dispatch('auth/setUserdata', {
@@ -48,6 +48,9 @@
 
                 this.$store.dispatch('auth/setCookieTokenFromState')
                 this.$nuxt.$router.push('/profile')
+
+                // Autorefresh/autoremove cookie from jwt
+                // POST /me endpoint
 
             } catch (err) {
                 console.log(err.response.data)
