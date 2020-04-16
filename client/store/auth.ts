@@ -45,5 +45,12 @@ export const actions: ActionTree<AuthState, RootState> = {
     const token = Cookie.get('token')
     const expiresAt = Cookie.get('token_expires_at')
     commit('SET_CREDENTIALS', { token, expiresAt })
+  },
+
+  logout ({ commit }) {
+    commit('SET_CREDENTIALS', { token: '', expiresAt: '' })
+    commit('SET_USERDATA', { email: '', name: '' })
+    Cookie.remove('token')
+    Cookie.remove('token_expires_at')
   }
 }

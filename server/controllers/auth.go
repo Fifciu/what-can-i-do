@@ -105,7 +105,6 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 	response["user"] = map[string]string{
 		"email": user.Email(),
 		"name": user.Name(),
-		"nickname": user.Nickname(),
 	}
 
 	databaseUser := &models.User{}

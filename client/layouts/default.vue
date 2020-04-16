@@ -7,18 +7,24 @@
           :selectedKeys="selectedNavItem"
           :style="{ lineHeight: '64px' }"
         >
-          <a-menu-item key="1">
-            <nuxt-link to="/">
-              Home
+          <a-menu-item
+            v-for="item in menuItems"
+            :key="item.name"
+          >
+            <nuxt-link
+              v-if="item.path"
+              :to="item.path"
+            >
+              {{ item.name }}
             </nuxt-link>
+            <span
+              v-else-if="item.action"
+              @click="item.action"
+              class="clickable"
+            >
+              {{ item.name }}
+            </span>
           </a-menu-item>
-          <a-menu-item key="2">About</a-menu-item>
-          <a-menu-item key="3">
-            <nuxt-link to="/join-us">
-              Join us
-            </nuxt-link>
-          </a-menu-item>
-          <a-menu-item key="4">Sign in</a-menu-item>
         </a-menu>
       </a-layout-header>
 
@@ -45,6 +51,9 @@
 <script>
   export default {
       computed: {
+          isLoggedIn () {
+              return this.$store.getters['auth/isLoggedIn']
+          },
           showBreadrcrumbs () {
               const allowedRoutes = [
                   'problem-id'
@@ -65,11 +74,53 @@
               }
               return breadcrumbs
           },
+
           selectedNavItem () {
-            if (this.$route.name == 'index') {
-                return ['1']
-            }
+            const index = this.menuItems.findIndex(item => this.$route.path == item.path) + 1
+              if (index > 0) {
+                  return [String(index)]
+              }
             return []
+          },
+
+          menuItems () {
+              const items = [
+                  {
+                      name: 'Home',
+                      path: '/'
+                  },
+                  {
+                      name: 'About',
+                      path: '/about'
+                  }
+              ]
+
+              if (this.isLoggedIn) {
+                  items.push(
+                      {
+                        name: 'My account',
+                        path: '/account'
+                      },
+                      {
+                          name: 'Logout',
+                          action: this.logout
+                      }
+                  )
+              } else {
+                  items.push({
+                      name: 'Sign up/in',
+                      path: '/sign-up-in'
+                  })
+              }
+
+              return items
+          }
+      },
+
+      methods: {
+          logout () {
+              this.$store.dispatch('auth/logout')
+              this.$router.push('/')
           }
       }
   }
@@ -97,6 +148,10 @@
 
   .ant-menu-item {
     padding: 0 15px;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 
 </style>

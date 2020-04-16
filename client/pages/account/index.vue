@@ -2,6 +2,8 @@
   <div>
     Welciome
     {{ $store.state.auth }}
+
+    {{ $store.getters['auth/isLoggedIn'] }}
   </div>
 </template>
 

@@ -47,14 +47,14 @@
                 })
 
                 this.$store.dispatch('auth/setCookieTokenFromState')
-                this.$nuxt.$router.push('/profile')
+                this.$nuxt.$router.push('/account')
 
                 // Autorefresh/autoremove cookie from jwt
                 // POST /me endpoint
 
             } catch (err) {
                 console.log(err.response.data)
-                this.$nuxt.$router.push('/join-us?error')
+                this.$nuxt.$router.push('/sign-in?error')
             }
         }
     }
