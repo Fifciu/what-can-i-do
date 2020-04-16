@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"github.com/stretchr/gomniauth"
@@ -16,6 +15,7 @@ import (
 )
 
 type Claims struct {
+	ID uint `json:"id"`
 	Fullname string `json:"fullname"`
 	Email string `json:"email"`
 	jwt.StandardClaims
@@ -91,7 +91,6 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 	queryParams := objx.Map(tmp)
 	creds, err := provider.CompleteAuth(queryParams)
 	if err != nil {
-		fmt.Println((err))
 		response := u.Message(false, "Could not complete auth")
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
@@ -110,7 +109,12 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	databaseUser := &models.User{}
-	databaseUser.Save(user.Email(), user.Name(), vars["provider"])
+	newUser, err := databaseUser.CreateOrGet(user.Email(), user.Name(), vars["provider"])
+	if err != nil {
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusInternalServerError)
+		return
+	}
 
 	jwtTtlString := os.Getenv("jwt_ttl")
 	jwtTtl, err := strconv.Atoi(jwtTtlString)
@@ -124,8 +128,9 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
 	claims := &Claims{
-		Fullname: user.Name(),
-		Email: user.Email(),
+		ID: newUser.ID,
+		Fullname: newUser.Fullname,
+		Email: newUser.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -139,7 +144,7 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response["token"] = tokenString
-	response["expires_in"] = expirationTime.Sub(time.Now()).Milliseconds()
+	response["expires_at"] = expirationTime
 
 	u.RespondWithCode(w, response, http.StatusOK)
 }

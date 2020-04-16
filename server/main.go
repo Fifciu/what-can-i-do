@@ -6,7 +6,7 @@ import (
 	"os"
 
 	controllers "github.com/fifciu/what-can-i-do/server/controllers"
-	//middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
+	middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -49,6 +49,9 @@ func main() {
 
 	router.HandleFunc("/",
 		controllers.HelloWorld).Methods("GET")
+
+	router.Handle("/protected",
+		middlewares.AuthUser(http.HandlerFunc(controllers.HelloWorld))).Methods("GET")
 
 	router.HandleFunc("/problems",
 		controllers.GetProblemsByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
