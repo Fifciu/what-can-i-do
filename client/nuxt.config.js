@@ -32,6 +32,7 @@ export default {
   */
   css: [
     'ant-design-vue/dist/antd.css',
+    '~/assets/scss/util.scss',
     '~/assets/scss/transitions.scss'
   ],
   /*
@@ -59,7 +60,13 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxtjs/style-resources'
   ],
+  styleResources: {
+    scss: [
+      '~/assets/scss/variables.scss',
+    ]
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options

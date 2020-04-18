@@ -221,7 +221,7 @@ export default {
   }
 
   .main-page {
-    padding: 24px;
+    padding: $cardPadding;
   }
 
   .problems {
@@ -230,3 +230,4 @@ export default {
     }
   }
 </style>
+

@@ -1,13 +1,20 @@
 <template>
-  <div>
+  <div class="sign">
+    <h2>Sign up/in</h2>
+    <p>We only accept authenticate via external platforms. Joining to our society requires having an account in one of the services listed below. </p>
     <a-alert
       message="Error"
       description="Could not authenticate"
       type="error"
+      class="my-14"
       showIcon
       v-if="$route.query && 'error' in $route.query"
     />
-    <a-button @click.native="googleInitAuth">Google auth</a-button>
+    <div class="sign-options">
+      <div class="sign-option">
+        <a-button type="primary" @click.native="googleInitAuth">Sign in via Google</a-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -28,6 +35,8 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.sign {
+  padding: $cardPadding;
+}
 </style>
