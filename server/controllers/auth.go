@@ -205,3 +205,14 @@ func RefreshToken (w http.ResponseWriter, r *http.Request) {
 
 	u.RespondWithCode(w, response, http.StatusOK)
 }
+
+func GetMe(w http.ResponseWriter, r *http.Request) {
+	claims := context.Get(r, "CurrentUser").(*Claims)
+	response := u.Status(true)
+	response["user"] = map[string]interface{}{
+		"fullname": claims.Fullname,
+		"email": claims.Email,
+	}
+	u.RespondWithCode(w, response, http.StatusOK)
+	return
+}

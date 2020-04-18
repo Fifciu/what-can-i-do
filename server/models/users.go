@@ -1,6 +1,8 @@
 package models
 
-import "errors"
+import (
+	"errors"
+)
 
 type User struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
@@ -45,6 +47,7 @@ func (user *User) CreateOrGet(email string, fullname string, provider string) (*
 	user.Provider = provider
 	user.Flags = 0
 	d := GetDB().Create(user).Scan(&newUser)
+	//fmt.Println(d.Error)
 	if d.Error != nil {
 		return nil, errors.New("Couldn't add user to database")
 	}

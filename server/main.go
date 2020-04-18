@@ -80,6 +80,9 @@ func main() {
 	router.Handle("/auth/refresh",
 		middlewares.AuthUser(http.HandlerFunc(controllers.RefreshToken))).Methods("POST")
 
+	router.Handle("/me",
+		middlewares.AuthUser(http.HandlerFunc(controllers.GetMe))).Methods("POST")
+
 	port := os.Getenv("api_port")
 	if port == "" {
 		port = "8090"
