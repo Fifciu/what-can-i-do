@@ -126,7 +126,7 @@
   }
 </script>
 
-<style>
+<style lang="scss">
   #components-layout-demo-top {
     min-height: 100vh;
   }
@@ -147,7 +147,10 @@
   }
 
   .ant-menu-item {
-    padding: 0 15px;
+    padding: 0 10px;
+    @media screen and (min-width: 340px) {
+      padding: 0 15px;
+    }
   }
 
   .clickable {
