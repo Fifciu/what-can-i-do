@@ -77,6 +77,9 @@ func main() {
 	router.HandleFunc("/auth/complete/{provider}",
 		controllers.CompleteAuth).Methods("POST")
 
+	router.Handle("/auth/refresh",
+		middlewares.AuthUser(http.HandlerFunc(controllers.RefreshToken))).Methods("POST")
+
 	port := os.Getenv("api_port")
 	if port == "" {
 		port = "8090"

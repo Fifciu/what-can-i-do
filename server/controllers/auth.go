@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"errors"
+	"github.com/gorilla/context"
 )
 
 type Claims struct {
@@ -21,8 +23,40 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+type ClaimsUser struct {
+	ID uint `json:"id"`
+	Fullname string `json:"fullname"`
+	Email string `json:"email"`
+}
+
 var jwtSecretKey = os.Getenv("jwt_key")
 var jwtKey = []byte(jwtSecretKey)
+
+func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
+	jwtTtlString := os.Getenv("jwt_ttl")
+	jwtTtl, err := strconv.Atoi(jwtTtlString)
+	if err != nil {
+		return "", time.Time{}, errors.New("Could not read JWT TT")
+	}
+	if jwtTtl == 0 {
+		jwtTtl = 5
+	}
+	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
+	claims := &Claims{
+		ID: claimsUser.ID,
+		Fullname: claimsUser.Fullname,
+		Email: claimsUser.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", time.Time{}, err
+	}
+	return tokenString, expirationTime, nil
+}
 
 func acceptedProvider (w http.ResponseWriter, r *http.Request) bool {
 	vars := mux.Vars(r)
@@ -114,34 +148,58 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
-
-	jwtTtlString := os.Getenv("jwt_ttl")
-	jwtTtl, err := strconv.Atoi(jwtTtlString)
-	if err != nil {
-		response := u.Message(false, "Could not read JWT TTL")
-		u.RespondWithCode(w, response, http.StatusInternalServerError)
-		return
-	}
-	if jwtTtl == 0 {
-		jwtTtl = 5
-	}
-	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
-	claims := &Claims{
+	claimsUser := &ClaimsUser{
 		ID: newUser.ID,
 		Fullname: newUser.Fullname,
 		Email: newUser.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Create the JWT string
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, expirationTime, err := generateJwt(claimsUser)
 	if err != nil {
-		// If there is an error in creating the JWT return an internal server error
-		w.WriteHeader(http.StatusInternalServerError)
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
+	response["token"] = tokenString
+	response["expires_at"] = expirationTime
+
+	u.RespondWithCode(w, response, http.StatusOK)
+}
+
+func RefreshToken (w http.ResponseWriter, r *http.Request) {
+
+	timeOffset := os.Getenv("jwt_offset")
+	timeOffsetNumber, err := strconv.Atoi(timeOffset)
+	if err != nil {
+		u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusInternalServerError)
+		return
+	}
+	if timeOffsetNumber == 0 {
+		timeOffsetNumber = 60
+	}
+
+	claims := context.Get(r, "CurrentUser").(*Claims)
+
+	// Expired offset
+	//fmt.Println(time.Unix(claims.ExpiresAt, 0).Sub(time.Now()), time.Duration(timeOffsetNumber)*time.Minute*-1)
+	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) < time.Duration(timeOffsetNumber)*time.Minute*-1 {
+		u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusBadRequest)
+		return
+	}
+
+	claimsUser := &ClaimsUser{
+		ID: claims.ID,
+		Fullname: claims.Fullname,
+		Email: claims.Email,
+	}
+	// Create the JWT string
+	tokenString, expirationTime, err := generateJwt(claimsUser)
+	if err != nil {
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusInternalServerError)
+		return
+	}
+	response := u.Status(true)
 	response["token"] = tokenString
 	response["expires_at"] = expirationTime
 

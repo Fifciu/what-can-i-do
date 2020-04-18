@@ -1,13 +1,13 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"github.com/fifciu/what-can-i-do/server/controllers"
 	u "github.com/fifciu/what-can-i-do/server/utils"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
 )
 
 var jwtSecretKey = os.Getenv("jwt_key")
@@ -34,6 +34,12 @@ func AuthUser(next http.Handler) http.Handler {
 				u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusUnauthorized)
 				return
 			}
+			if strings.HasPrefix(err.Error(), "token is expired by") && r.URL.Path == "/auth/refresh" {
+				// Allow to try to refresh
+				context.Set(r, "CurrentUser", claims)
+				next.ServeHTTP(w, r)
+				return
+			}
 			u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusBadRequest)
 			return
 		}
@@ -43,7 +49,7 @@ func AuthUser(next http.Handler) http.Handler {
 		}
 
 		// How to share claims between? Context?
-		w.Write([]byte(fmt.Sprintf("Welcome %d!", claims.ID)))
-
+		context.Set(r, "CurrentUser", claims)
+		next.ServeHTTP(w, r)
 	})
 }
