@@ -109,7 +109,7 @@
               } else {
                   items.push({
                       name: 'Sign up/in',
-                      path: '/sign-up-in'
+                      path: '/sign-in'
                   })
               }
 
