@@ -36,7 +36,7 @@ func (user *User) CreateOrGet(email string, fullname string, provider string) (*
 	existingUser := &User{}
 	GetDB().Table("users").Select("*").Where("email = ?", email).First(existingUser)
 
-	if existingUser.Email == email && existingUser.Fullname == fullname && existingUser.Provider == provider {
+	if existingUser.Email == email {
 		return existingUser, nil
 	}
 
