@@ -41,7 +41,16 @@
 <!--              </span>-->
 <!--              <span key="comment-basic-reply-to">Fake news</span>-->
 <!--            </template>-->
-            <p slot="content">{{item.description}}</p>
+            <div slot="content">
+              <h5>What can I do?</h5>
+              <p>{{item.action_description}}</p>
+              <h5>What impact would my action have?</h5>
+              <p>{{item.results_description}}</p>
+              <h5>Budget</h5>
+              <p>${{item.money_price}}</p>
+              <h5>Needed time</h5>
+              <p>{{item.time_price}} minute{{item.time_price != 1 ? 's' : ''}}</p>
+            </div>
             <a-tooltip slot="datetime">
               <span>{{item.datetime}}</span>
             </a-tooltip>
@@ -103,7 +112,7 @@
                   ]
                 },
               ]"
-              placeholder="What impact my action would have?"
+              placeholder="What impact would my action have?"
               :autoSize="{ minRows: 3, maxRows: 5 }"
             />
           </a-form-item>
