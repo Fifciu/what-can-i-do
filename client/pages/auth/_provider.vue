@@ -50,6 +50,8 @@
                 const savedRedirectType = localStorage.getItem('back-type')
                 const savedRedirectSlug = localStorage.getItem('back-slug')
                 if (savedRedirectSlug && savedRedirectType) {
+                    localStorage.removeItem('back-type')
+                    localStorage.removeItem('back-slug')
                     this.$nuxt.$router.push(`/${savedRedirectType}/${savedRedirectSlug}`)
                 } else {
                     this.$nuxt.$router.push('/account')

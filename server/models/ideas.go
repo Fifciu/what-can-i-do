@@ -3,9 +3,10 @@ package models
 type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
+	ProblemName string `gorm:"-" json:"problem_name"`
 	UserID   uint    `json:"user_id"`
 	AuthorName string `gorm:"-" json:"author_name"`
-	IsPublished   bool    `json:"-"`
+	IsPublished   bool    `json:"is_published"`
 	ActionDescription   string    `json:"action_description"`
 	ResultsDescription   string    `json:"results_description"`
 	MoneyPrice float32 `json:"money_price"`
@@ -28,6 +29,28 @@ func (idea Idea) TableName() string {
 //	GetDB().Create(message)
 //}
 
+func addProblemsName (ideas []*Idea) {
+	problemIdsSet := make(map[uint]bool)
+	for _, idea := range ideas {
+		problemIdsSet[idea.ProblemID] = true
+	}
+	problemIds := make([]uint, len(problemIdsSet))
+	counter := 0
+	for id, _ := range problemIdsSet {
+		problemIds[counter] = id
+		counter++
+	}
+	problems := []*Problem{}
+	GetDB().Table("problems").Select("id, name").Where("id IN (?)", problemIds).Scan(&problems)
+	problemsMap := make(map[uint]*Problem)
+	for _, problem := range problems {
+		problemsMap[problem.ID] = problem
+	}
+	for _, idea := range ideas {
+		idea.ProblemName = problemsMap[idea.ProblemID].Name
+	}
+}
+
 func GetProblemIdeas(problemId int) []*Idea {
 	ideas := []*Idea{}
 	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
@@ -37,8 +60,8 @@ func GetProblemIdeas(problemId int) []*Idea {
 
 func GetUserIdeas(userId uint) []*Idea {
 	ideas := []*Idea{}
-	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("user_id = ?", userId).Scan(&ideas)
-
+	GetDB().Table("ideas").Select("id, problem_id, action_description, results_description, money_price, time_price, is_published").Where("user_id = ?", userId).Scan(&ideas)
+	addProblemsName(ideas)
 	return ideas
 }
 
