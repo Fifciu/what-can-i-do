@@ -16,19 +16,6 @@ import (
 
 func main() {
 
-	//User:
-	//	Id
-	//	Fullname
-	//	Email
-	//	Password
-	//	CreatedAt
-	//	<smth from fb/google/linkedin?>
-	//
-	//Vote:
-	//	Id
-	//	IdeaID
-	//	IsPlus
-
 	pwaProtocol := os.Getenv("pwa_protocol")
 	pwaHost := os.Getenv("pwa_host")
 	pwaPort := os.Getenv("pwa_port")

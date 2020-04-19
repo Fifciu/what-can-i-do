@@ -3,6 +3,7 @@ module github.com/fifciu/what-can-i-do/server
 go 1.13
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec // indirect
 	github.com/cosmtrek/air v1.12.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -24,5 +25,6 @@ require (
 	github.com/stretchr/tracer v0.0.0-20140124184152-66d3696bba97 // indirect
 	github.com/ugorji/go v1.1.7 // indirect
 	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d // indirect
+	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )

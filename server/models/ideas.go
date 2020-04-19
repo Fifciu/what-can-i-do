@@ -17,18 +17,6 @@ func (idea Idea) TableName() string {
 	return "ideas"
 }
 
-//func (problem *Problem) Save(userId uint, userName string) {
-//	if len(message.Message) < 1 {
-//		return
-//	}
-//
-//	message.UserID = userId
-//	message.Name = userName
-//	message.CreatedAt = time.Now().UTC()
-//
-//	GetDB().Create(message)
-//}
-
 func addProblemsName (ideas []*Idea) {
 	problemIdsSet := make(map[uint]bool)
 	for _, idea := range ideas {
@@ -47,14 +35,18 @@ func addProblemsName (ideas []*Idea) {
 		problemsMap[problem.ID] = problem
 	}
 	for _, idea := range ideas {
-		idea.ProblemName = problemsMap[idea.ProblemID].Name
+		if problem, ok := problemsMap[idea.ProblemID]; ok {
+			idea.ProblemName = problem.Name
+		} else {
+			// I SHOULD LOG IT
+			idea.ProblemName = "Not found"
+		}
 	}
 }
 
-func GetProblemIdeas(problemId int) []*Idea {
+func GetProblemIdeas(problemId uint) []*Idea {
 	ideas := []*Idea{}
 	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
-
 	return ideas
 }
 
@@ -64,16 +56,6 @@ func GetUserIdeas(userId uint) []*Idea {
 	addProblemsName(ideas)
 	return ideas
 }
-
-//func GetProblem(problemId int, withIdeas bool) *Problem {
-//	problem := &Problem{}
-//	if !withIdeas {
-//		GetDB().Table("problems").Select("*").Where("id = ?", problemId).First(problem)
-//	}
-//	//GetDB().Table("message").Select("message.*, user.name").Joins("INNER JOIN user ON user.id = message.user_id").Scan(&messages)
-//
-//	return problem
-//}
 
 func (idea *Idea) Save(userID uint, problemID uint, actionDescription string, resultsDescription string, moneyPrice float32, timePrice int) bool {
 	existingIdea := &Idea{}
