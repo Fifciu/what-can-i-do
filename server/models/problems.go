@@ -1,9 +1,12 @@
 package models
 
+import "github.com/gosimple/slug"
+
 type Problem struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	UserID        uint      `json:"user_id"`
 	Name   string    `json:"name"`
+	Slug string `json:"slug"`
 	Description   string    `json:"description"`
 	IsPublished bool `json:"is_published"`
 	Ideas []*Idea `json:"ideas" gorm:"foreignkey:ProblemID"`
@@ -13,10 +16,20 @@ func (problem Problem) TableName() string {
 	return "problems"
 }
 
+func addSlug (problem *Problem) {
+	problem.Slug = slug.Make(problem.Name)
+}
+
+func addSlugToMany (problems []*Problem) {
+	for _, problem := range problems {
+		addSlug(problem)
+	}
+}
+
 func GetAllProblems() []*Problem {
 	problems := []*Problem{}
 	GetDB().Table("problems").Select("*").Where("is_published = 1").Scan(&problems)
-
+	addSlugToMany(problems)
 	return problems
 }
 
@@ -24,6 +37,7 @@ func GetProblem(problemId int, withIdeas bool) *Problem {
 	problem := &Problem{}
 
 	GetDB().Table("problems").Select("*").Where("id = ? AND is_published = 1", problemId).First(problem)
+	addSlug(problem)
 	if withIdeas {
 		ideas := []*Idea{}
 		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
@@ -60,6 +74,7 @@ func GetProblemsByQuery(searchQuery string) []*Problem {
 	queryAsPart := "%" + searchQuery + "%"
 
 	GetDB().Table("problems").Select("*").Where("name LIKE ? AND is_published = 1", queryAsPart).Scan(&problems)
+	addSlugToMany(problems)
 	return problems
 }
 
