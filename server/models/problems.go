@@ -22,6 +22,12 @@ func GetAllProblems() []*Problem {
 	return problems
 }
 
+func GetUserProblems(userID uint) []*Problem {
+	problems := []*Problem{}
+	GetDB().Table("problems").Select("*").Where("user_id = ?", userID).Scan(&problems)
+	return problems
+}
+
 func GetProblem(problemSlug string, withIdeas bool) *Problem {
 	problem := &Problem{}
 
