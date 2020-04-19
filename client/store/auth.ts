@@ -15,6 +15,7 @@ export type AuthState = ReturnType<typeof state>
 
 export const getters: GetterTree<AuthState, RootState> = {
   isLoggedIn: state => !!state.token,
+  token: state => state.token
 }
 
 export const mutations: MutationTree<AuthState> = {
@@ -25,7 +26,6 @@ export const mutations: MutationTree<AuthState> = {
   SET_USERDATA: (state, { email, name }) => {
     state.user.email = email
     state.user.name = name
-
   }
 }
 

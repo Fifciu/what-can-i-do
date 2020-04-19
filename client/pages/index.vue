@@ -14,7 +14,7 @@
           <a-list-item slot="renderItem" slot-scope="item, index">
             <a
               slot="actions"
-              @click="$router.push(`/problem/${item.id}`)"
+              @click="$router.push(`/problem/${item.slug}`)"
             >Details</a>
             <a-list-item-meta
               :description="item.description.slice(0, 20) + '...'"
@@ -90,7 +90,12 @@
           </a-form-item>
         </a-form>
       </TransitionFadeExpand>
-      <a-button v-if="!addingProblemForm" type="primary" class="problem__add-btn" @click.native="onclickAddProblem">
+      <a-button type="primary" html-type="submit" v-if="!isLoggedIn">
+        <nuxt-link to="/sign-in">
+          Sign in at first
+        </nuxt-link>
+      </a-button>
+      <a-button v-else-if="!addingProblemForm" type="primary" class="problem__add-btn" @click.native="onclickAddProblem">
         <template v-if="addedProblem">Add another problem</template>
         <template v-else>Add a problem</template>
       </a-button>
@@ -133,6 +138,12 @@ export default {
         }
     },
 
+    computed: {
+        isLoggedIn () {
+            return this.$store.getters['auth/isLoggedIn']
+        }
+    },
+
     methods: {
 
         onclickAddProblem () {
@@ -146,10 +157,18 @@ export default {
                 if (!err) {
                     const { description, name } = this.form.getFieldsValue(['description', 'name'])
                     this.isAddingProblem = true
+                    const token = this.$store.getters['auth/token']
+                    if (!token) {
+                        return
+                    }
                     try {
                         await this.$axios.post('/problems', {
                             description,
                             name
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
                         })
 
                         this.addedProblem = true
