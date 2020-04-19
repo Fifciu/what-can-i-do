@@ -79,14 +79,20 @@ export const actions: ActionTree<AuthState, RootState> = {
     }
   },
 
-  async refresh({ commit }, { token }): Promise<Boolean> {
+  async refresh({ commit }, { token, cookie = false }): Promise<Boolean> {
     try {
-      let response = await this.$axios.post('auth/refresh', {
+      let response = await this.$axios.post('auth/refresh', {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
       commit('SET_CREDENTIALS', { token: response.data.token, expiresAt: response.data.expires_at })
+      if (cookie) {
+        const jwtOffset = Number(process.env.jwt_offset) || 0
+        const uselessTokenDate = new Date(new Date().getTime() + response.data.expires_a + jwtOffset * 60 * 1000);
+        Cookie.set('token', response.data.token, { expires: uselessTokenDate})
+        Cookie.set('token_expires_at', response.data.expires_at, { expires: uselessTokenDate})
+      }
       return true
     } catch (err) {
       return false

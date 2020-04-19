@@ -49,6 +49,7 @@
                 this.$store.dispatch('auth/setCookieTokenFromState')
                 const savedRedirectType = localStorage.getItem('back-type')
                 const savedRedirectSlug = localStorage.getItem('back-slug')
+
                 if (savedRedirectSlug && savedRedirectType) {
                     localStorage.removeItem('back-type')
                     localStorage.removeItem('back-slug')
