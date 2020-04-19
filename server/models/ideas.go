@@ -35,6 +35,13 @@ func GetProblemIdeas(problemId int) []*Idea {
 	return ideas
 }
 
+func GetUserIdeas(userId uint) []*Idea {
+	ideas := []*Idea{}
+	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("user_id = ?", userId).Scan(&ideas)
+
+	return ideas
+}
+
 //func GetProblem(problemId int, withIdeas bool) *Problem {
 //	problem := &Problem{}
 //	if !withIdeas {

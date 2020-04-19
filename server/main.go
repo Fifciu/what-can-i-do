@@ -74,6 +74,9 @@ func main() {
 	router.Handle("/ideas",
 		middlewares.AuthUser(http.HandlerFunc(controllers.AddIdea))).Methods("POST")
 
+	router.Handle("/ideas/mine",
+		middlewares.AuthUser(http.HandlerFunc(controllers.GetMineIdeas))).Methods("POST")
+
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")
 

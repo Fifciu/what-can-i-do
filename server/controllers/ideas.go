@@ -9,6 +9,14 @@ import (
 	"github.com/gorilla/context"
 )
 
+func GetMineIdeas(w http.ResponseWriter, r *http.Request) {
+	claims := context.Get(r, "CurrentUser").(*Claims)
+	ideas := models.GetUserIdeas(claims.ID)
+	response := u.Status(true)
+	response["ideas"] = ideas
+	u.RespondWithCode(w, response, http.StatusOK)
+}
+
 func AddIdea(w http.ResponseWriter, r *http.Request) {
 	idea := &models.Idea{}
 	err := json.NewDecoder(r.Body).Decode(idea)
