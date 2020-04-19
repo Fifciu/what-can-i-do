@@ -16,20 +16,9 @@ func (problem Problem) TableName() string {
 	return "problems"
 }
 
-func addSlug (problem *Problem) {
-	problem.Slug = slug.Make(problem.Name)
-}
-
-func addSlugToMany (problems []*Problem) {
-	for _, problem := range problems {
-		addSlug(problem)
-	}
-}
-
 func GetAllProblems() []*Problem {
 	problems := []*Problem{}
 	GetDB().Table("problems").Select("*").Where("is_published = 1").Scan(&problems)
-	addSlugToMany(problems)
 	return problems
 }
 
@@ -37,7 +26,6 @@ func GetProblem(problemId int, withIdeas bool) *Problem {
 	problem := &Problem{}
 
 	GetDB().Table("problems").Select("*").Where("id = ? AND is_published = 1", problemId).First(problem)
-	addSlug(problem)
 	if withIdeas {
 		ideas := []*Idea{}
 		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
@@ -74,7 +62,6 @@ func GetProblemsByQuery(searchQuery string) []*Problem {
 	queryAsPart := "%" + searchQuery + "%"
 
 	GetDB().Table("problems").Select("*").Where("name LIKE ? AND is_published = 1", queryAsPart).Scan(&problems)
-	addSlugToMany(problems)
 	return problems
 }
 
@@ -104,6 +91,7 @@ func (problem *Problem) Save(userId uint, name string, description string) bool 
 	problem.UserID = userId
 	problem.Name = name
 	problem.Description = description
+	problem.Slug = slug.Make(name)
 	d := GetDB().Create(problem)
 	if d.Error != nil {
 		return false
