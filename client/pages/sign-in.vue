@@ -24,6 +24,11 @@
         methods: {
             async googleInitAuth () {
                 try {
+                    const back = this.$route.query
+                    if (back['back-type'] && back['back-slug']) {
+                        localStorage.setItem('back-type', back['back-type'])
+                        localStorage.setItem('back-slug', back['back-slug'])
+                    }
                     let response = await this.$axios.post('/auth/init/google')
                     const redirectUrl = response.data.redirectUrl
                     window.location.href = redirectUrl

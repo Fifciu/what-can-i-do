@@ -72,11 +72,11 @@
           <a-form-item
             :label-col="formItemLayout.labelCol"
             :wrapper-col="formItemLayout.wrapperCol"
-            label="Description"
+            label="Action's description"
           >
             <a-textarea
               v-decorator="[
-                'description',
+                'action_description',
                 { rules:
                   [
                     { required: true, message: 'Please input idea\'s description' },
@@ -84,23 +84,55 @@
                   ]
                 },
               ]"
-              placeholder="Please input idea's description"
+              placeholder="What could I do?"
               :autoSize="{ minRows: 3, maxRows: 5 }"
             />
           </a-form-item>
           <a-form-item
             :label-col="formItemLayout.labelCol"
             :wrapper-col="formItemLayout.wrapperCol"
-            label="Price"
+            label="Result's description"
+          >
+            <a-textarea
+              v-decorator="[
+                'results_description',
+                { rules:
+                  [
+                    { required: true, message: 'Please input idea\'s description' },
+                    { validator: (rule, value) => value.length >= 15 || !value.length, message: 'Description should have at least 15 chars' }
+                  ]
+                },
+              ]"
+              placeholder="What impact my action would have?"
+              :autoSize="{ minRows: 3, maxRows: 5 }"
+            />
+          </a-form-item>
+          <a-form-item
+            :label-col="formItemLayout.labelCol"
+            :wrapper-col="formItemLayout.wrapperCol"
+            label="Money Price"
           >
             <a-input-number
               v-decorator="[
-                'price',
+                'money_price',
                 { initialValue: 0 }
               ]"
               :min="0"
               :formatter="value => `$ ${(+value/100).toFixed(2)}`"
-              :parser="value => value.replace('$ ', '').replace('.','')"
+              :parser="value => isNaN(value.replace('$ ', '').replace('.','')) ? 0 : value.replace('$ ', '').replace('.','')"
+            />
+          </a-form-item>
+          <a-form-item
+            :label-col="formItemLayout.labelCol"
+            :wrapper-col="formItemLayout.wrapperCol"
+            label="Time price (minutes)"
+          >
+            <a-input-number
+              v-decorator="[
+                'time_price',
+                { initialValue: 0 }
+              ]"
+              :min="0"
             />
           </a-form-item>
         </a-form>
@@ -108,7 +140,15 @@
       </TransitionFadeExpand>
 
       <div class="problem__add-btn-wrapper">
-        <a-button type="primary" class="problem__add-btn" @click.native="onclickAddIdea">
+        <div v-if="!isLoggedIn">
+          <h3>Do you want to add own idea?</h3>
+          <a-button type="primary" class="problem__add-btn" html-type="submit">
+            <nuxt-link :to="`/sign-in?back-type=problem&back-slug=${problem.slug}`">
+              Sign in at first
+            </nuxt-link>
+          </a-button>
+        </div>
+        <a-button type="primary" class="problem__add-btn" @click.native="onclickAddIdea" v-else>
           <template v-if="addedIdea">Add another idea</template>
           <template v-else>Add an idea</template>
         </a-button>
@@ -148,6 +188,11 @@
 
             }
         },
+        computed: {
+            isLoggedIn () {
+                return this.$store.getters['auth/isLoggedIn']
+            }
+        },
         async asyncData ({ store, params, error, $axios }) {
             try {
                 let { data } = await $axios.get(`/problems/${params.slug}/ideas`)
@@ -177,13 +222,28 @@
             check() {
                 this.form.validateFields(async err => {
                     if (!err) {
-                        const { description, price } = this.form.getFieldsValue(['description', 'price'])
+                        const {
+                            action_description,
+                            results_description,
+                            money_price,
+                            time_price
+                        } = this.form.getFieldsValue(['action_description', 'results_description', 'money_price', 'time_price'])
+                        const token = this.$store.getters['auth/token']
+                        if (!token) {
+                            return
+                        }
                         this.isAddingIdea = true
                         try {
                             await this.$axios.post('/ideas', {
-                                problem_id: Number(this.$route.params.id),
-                                description,
-                                price: price / 100
+                                problem_id: Number(this.problem.id),
+                                action_description,
+                                results_description,
+                                money_price: money_price / 100,
+                                time_price
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
                             })
 
                             this.addedIdea = true

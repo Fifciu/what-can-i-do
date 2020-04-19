@@ -4,7 +4,7 @@ type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
 	UserID   uint    `json:"user_id"`
-	AuthorName string `json:"author_name"`
+	AuthorName string `gorm:"-" json:"author_name"`
 	IsPublished   bool    `json:"-"`
 	ActionDescription   string    `json:"action_description"`
 	ResultsDescription   string    `json:"results_description"`
@@ -47,7 +47,7 @@ func GetProblemIdeas(problemId int) []*Idea {
 
 func (idea *Idea) Save(userID uint, problemID uint, actionDescription string, resultsDescription string, moneyPrice float32, timePrice int) bool {
 	existingIdea := &Idea{}
-	GetDB().Table("ideas").Select("description").Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).First(existingIdea)
+	GetDB().Table("ideas").Select("action_description").Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).First(existingIdea)
 	if existingIdea.ActionDescription == actionDescription {
 		return false
 	}

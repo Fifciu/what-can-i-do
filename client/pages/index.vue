@@ -156,11 +156,11 @@ export default {
             this.form.validateFields(async err => {
                 if (!err) {
                     const { description, name } = this.form.getFieldsValue(['description', 'name'])
-                    this.isAddingProblem = true
                     const token = this.$store.getters['auth/token']
                     if (!token) {
                         return
                     }
+                    this.isAddingProblem = true
                     try {
                         await this.$axios.post('/problems', {
                             description,

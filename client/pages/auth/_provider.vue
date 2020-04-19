@@ -47,7 +47,13 @@
                 })
 
                 this.$store.dispatch('auth/setCookieTokenFromState')
-                this.$nuxt.$router.push('/account')
+                const savedRedirectType = localStorage.getItem('back-type')
+                const savedRedirectSlug = localStorage.getItem('back-slug')
+                if (savedRedirectSlug && savedRedirectType) {
+                    this.$nuxt.$router.push(`/${savedRedirectType}/${savedRedirectSlug}`)
+                } else {
+                    this.$nuxt.$router.push('/account')
+                }
 
                 // Autorefresh/autoremove cookie from jwt
                 // POST /me endpoint
