@@ -6,6 +6,7 @@ import (
 
 	u "github.com/fifciu/what-can-i-do/server/utils"
 	"github.com/fifciu/what-can-i-do/server/models"
+	"github.com/gorilla/context"
 )
 
 func AddIdea(w http.ResponseWriter, r *http.Request) {
@@ -31,19 +32,27 @@ func AddIdea(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(idea.Description) < 15 {
-		response = u.Message(false, "Problem's description must have at least 15 characters")
+	if len(idea.ActionDescription) < 15 {
+		response = u.Message(false, "Idea's action description must have at least 15 characters")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}
 
-	if idea.Price < 0 {
-		response = u.Message(false, "Problem's price be bigger or equal $0")
+	if len(idea.ResultsDescription) < 15 {
+		response = u.Message(false, "Idea's results description must have at least 15 characters")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}
 
-	if !idea.Save(idea.Description, idea.Price, idea.ProblemID) {
+	if idea.MoneyPrice < 0 {
+		response = u.Message(false, "Idea's price be bigger or equal $0")
+		u.RespondWithCode(w, response, http.StatusBadRequest)
+		return
+	}
+
+	claims := context.Get(r, "CurrentUser").(*Claims)
+
+	if !idea.Save(claims.ID, idea.ProblemID, idea.ActionDescription, idea.ResultsDescription, idea.MoneyPrice, idea.TimePrice) {
 		response = u.Message(false, "Problem with this description has already exist")
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return

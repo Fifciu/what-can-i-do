@@ -65,11 +65,11 @@ func main() {
 	router.Handle("/problems/{problemId:[0-9]+}/ideas",
 			http.HandlerFunc(controllers.GetCertainProblemWithIdeas)).Methods("GET")
 
-	router.HandleFunc("/problems",
-		controllers.AddProblem).Methods("POST")
+	router.Handle("/problems",
+		middlewares.AuthUser(http.HandlerFunc(controllers.AddProblem))).Methods("POST")
 
-	router.HandleFunc("/ideas",
-		controllers.AddIdea).Methods("POST")
+	router.Handle("/ideas",
+		middlewares.AuthUser(http.HandlerFunc(controllers.AddIdea))).Methods("POST")
 
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")

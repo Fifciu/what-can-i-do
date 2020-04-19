@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 )
 
 type User struct {
@@ -39,6 +40,9 @@ func (user *User) CreateOrGet(email string, fullname string, provider string) (*
 	if existingUser.Email == email {
 		return existingUser, nil
 	}
+
+	fmt.Println(existingUser)
+	fmt.Println("aaa", email, fullname, provider)
 
 	newUser := &User{}
 

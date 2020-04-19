@@ -2,6 +2,7 @@ package models
 
 type Problem struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
+	UserID        uint      `json:"user_id"`
 	Name   string    `json:"name"`
 	Description   string    `json:"description"`
 	IsPublished bool `json:"is_published"`
@@ -11,18 +12,6 @@ type Problem struct {
 func (problem Problem) TableName() string {
 	return "problems"
 }
-
-//func (problem *Problem) Save(userId uint, userName string) {
-//	if len(message.Message) < 1 {
-//		return
-//	}
-//
-//	message.UserID = userId
-//	message.Name = userName
-//	message.CreatedAt = time.Now().UTC()
-//
-//	GetDB().Create(message)
-//}
 
 func GetAllProblems() []*Problem {
 	problems := []*Problem{}
@@ -38,6 +27,28 @@ func GetProblem(problemId int, withIdeas bool) *Problem {
 	if withIdeas {
 		ideas := []*Idea{}
 		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
+		userIdsSet := make(map[uint]bool)
+		for _, idea := range ideas {
+			userIdsSet[idea.UserID] = true
+		}
+		userIds := make([]uint, len(userIdsSet))
+		counter := 0
+		for id, _ := range userIdsSet {
+			userIds[counter] = id
+			counter++
+		}
+		users := []*User{}
+		GetDB().Table("users").Select("id, fullname").Where("id IN (?)", userIds).Scan(&users)
+
+		userIdUserMap := make(map[uint]*User)
+		for _, user := range users {
+			userIdUserMap[user.ID] = user
+		}
+
+		for i, idea := range ideas {
+			ideas[i].AuthorName = userIdUserMap[idea.UserID].Fullname
+
+		}
 		problem.Ideas = ideas
 	}
 
@@ -61,7 +72,7 @@ func ProblemExists(problemId uint) bool {
 	return false
 }
 
-func (problem *Problem) Save(name string, description string) bool {
+func (problem *Problem) Save(userId uint, name string, description string) bool {
 	existingProblem := &Problem{}
 	GetDB().Table("problems").Select("*").Where("name = ? AND is_published = 1", name).First(existingProblem)
 
@@ -69,8 +80,18 @@ func (problem *Problem) Save(name string, description string) bool {
 		return false
 	}
 
+	existingUnpublishedProblem := &Problem{}
+	GetDB().Table("problems").Select("*").Where("name = ? AND description = ? AND is_published = 0", name, description).First(existingUnpublishedProblem)
+	if existingUnpublishedProblem.ID > 0 {
+		return false
+	}
+
+	problem.UserID = userId
 	problem.Name = name
 	problem.Description = description
-	GetDB().Create(problem)
+	d := GetDB().Create(problem)
+	if d.Error != nil {
+		return false
+	}
 	return true
 }

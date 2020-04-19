@@ -40,7 +40,7 @@ func AuthUser(next http.Handler) http.Handler {
 				next.ServeHTTP(w, r)
 				return
 			}
-			u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusBadRequest)
+			u.RespondWithCode(w, map[string]interface{}{"status": false, "error": err.Error()}, http.StatusBadRequest)
 			return
 		}
 		if !tkn.Valid {

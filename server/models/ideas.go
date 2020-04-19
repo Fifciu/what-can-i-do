@@ -3,9 +3,13 @@ package models
 type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
+	UserID   uint    `json:"user_id"`
+	AuthorName string `json:"author_name"`
 	IsPublished   bool    `json:"-"`
-	Description   string    `json:"description"`
-	Price float32 `json:"price"`
+	ActionDescription   string    `json:"action_description"`
+	ResultsDescription   string    `json:"results_description"`
+	MoneyPrice float32 `json:"money_price"`
+	TimePrice int `json:"time_price"`
 }
 
 func (idea Idea) TableName() string {
@@ -26,7 +30,7 @@ func (idea Idea) TableName() string {
 
 func GetProblemIdeas(problemId int) []*Idea {
 	ideas := []*Idea{}
-	GetDB().Table("ideas").Select("id, description, price").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
+	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
 
 	return ideas
 }
@@ -41,16 +45,19 @@ func GetProblemIdeas(problemId int) []*Idea {
 //	return problem
 //}
 
-func (idea *Idea) Save(description string, price float32, problemID uint) bool {
+func (idea *Idea) Save(userID uint, problemID uint, actionDescription string, resultsDescription string, moneyPrice float32, timePrice int) bool {
 	existingIdea := &Idea{}
-	GetDB().Table("ideas").Select("*").Where("description = ? AND problem_id = ? AND is_published = 1", description, problemID).First(existingIdea)
-	if existingIdea.Description == description {
+	GetDB().Table("ideas").Select("description").Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).First(existingIdea)
+	if existingIdea.ActionDescription == actionDescription {
 		return false
 	}
 
-	idea.Price = price
-	idea.Description = description
+	idea.UserID = userID
 	idea.ProblemID = problemID
+	idea.ActionDescription = actionDescription
+	idea.ResultsDescription = resultsDescription
+	idea.MoneyPrice = moneyPrice
+	idea.TimePrice = timePrice
 	idea.IsPublished = false
 	GetDB().Create(idea)
 	return true
