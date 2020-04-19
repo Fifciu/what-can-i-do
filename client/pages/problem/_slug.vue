@@ -150,7 +150,7 @@
         },
         async asyncData ({ store, params, error, $axios }) {
             try {
-                let { data } = await $axios.get(`/problems/${params.id}/ideas`)
+                let { data } = await $axios.get(`/problems/${params.slug}/ideas`)
                 store.dispatch('breadcrumbs/changeTitle', data.problem.name)
                 return {
                      problem: {
