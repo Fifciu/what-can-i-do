@@ -59,10 +59,10 @@ func main() {
 	router.HandleFunc("/problems",
 		controllers.GetProblems).Methods("GET")
 
-	router.HandleFunc("/problems/{problemId:[0-9]+}",
+	router.HandleFunc("/problems/{problemSlug}",
 		controllers.GetCertainProblem).Methods("GET")
 
-	router.Handle("/problems/{problemId:[0-9]+}/ideas",
+	router.Handle("/problems/{problemSlug}/ideas",
 			http.HandlerFunc(controllers.GetCertainProblemWithIdeas)).Methods("GET")
 
 	router.Handle("/problems",

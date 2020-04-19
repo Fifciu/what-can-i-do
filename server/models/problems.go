@@ -22,11 +22,12 @@ func GetAllProblems() []*Problem {
 	return problems
 }
 
-func GetProblem(problemId int, withIdeas bool) *Problem {
+func GetProblem(problemSlug string, withIdeas bool) *Problem {
 	problem := &Problem{}
 
-	GetDB().Table("problems").Select("*").Where("id = ? AND is_published = 1", problemId).First(problem)
+	GetDB().Table("problems").Select("*").Where("slug = ? AND is_published = 1", problemSlug).First(problem)
 	if withIdeas {
+		problemId := problem.ID
 		ideas := []*Idea{}
 		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
 		userIdsSet := make(map[uint]bool)
