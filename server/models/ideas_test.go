@@ -59,7 +59,7 @@ func TestGetUserIdeas(t *testing.T) {
 	mock.ExpectQuery("^SELECT (.+) FROM `ideas` WHERE \\(user_id = \\?\\)").WithArgs(userId).WillReturnRows(sqlRows)
 
 	// Act
-	ideas := GetUserIdeas(userId)
+	ideas := GetUserIdeas(userId, []IdeasMapper{})
 
 	// Assert
 	for _, idea := range ideas {
@@ -69,7 +69,7 @@ func TestGetUserIdeas(t *testing.T) {
 	}
 }
 
-func TestAddProblemsName(t *testing.T) {
+func TestMapperAddProblemsName(t *testing.T) {
 	// Arrange
 	Db, mock, _ := sqlmock.New()
 	db, _ = gorm.Open("mysql", Db)
@@ -79,7 +79,7 @@ func TestAddProblemsName(t *testing.T) {
 	}).
 		AddRow(1, "Coronavirus").
 		AddRow(2, "Pollution")
-	mock.ExpectQuery("^SELECT (.+) FROM `problems` (.+)").WillReturnRows(sqlRows)
+	mock.ExpectQuery("^SELECT (.+) FROM `problems` (.+) \\(id IN \\(\\?,\\?,\\?\\)(.+)").WithArgs(uint(1), uint(2), uint(4)).WillReturnRows(sqlRows)
 	ideas := []*Idea{
 		{
 			ProblemID: uint(1),
@@ -93,7 +93,7 @@ func TestAddProblemsName(t *testing.T) {
 	}
 
 	// Act
-	addProblemsName(ideas)
+	MapperAddProblemsName(ideas)
 
 	// Assert
 	for _, idea := range ideas {
@@ -121,8 +121,8 @@ func TestSaveIdea(t *testing.T) {
 		"time_price",
 	}).
 		AddRow(1, 1, 1, 1, "Test 1a", "Test 1b", 12.33, 0)
-	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)").WillReturnRows(sqlRows)
-	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)").WillReturnRows(sqlRows)
+	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Test 1a", 1).WillReturnRows(sqlRows)
+	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Test 2a", 1).WillReturnRows(sqlRows)
 
 	// Act
 	idea := Idea{}

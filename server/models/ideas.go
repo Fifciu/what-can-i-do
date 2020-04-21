@@ -17,7 +17,9 @@ func (idea Idea) TableName() string {
 	return "ideas"
 }
 
-func addProblemsName (ideas []*Idea) {
+type IdeasMapper func ([]*Idea)
+
+func MapperAddProblemsName (ideas []*Idea) {
 	problemIdsSet := make(map[uint]bool)
 	for _, idea := range ideas {
 		problemIdsSet[idea.ProblemID] = true
@@ -29,7 +31,11 @@ func addProblemsName (ideas []*Idea) {
 		counter++
 	}
 	problems := []*Problem{}
-	GetDB().Table("problems").Select("id, name").Where("id IN (?)", problemIds).Scan(&problems)
+	GetDB().
+		Table("problems").
+		Select("id, name").
+		Where("id IN (?)", problemIds).
+		Scan(&problems)
 	problemsMap := make(map[uint]*Problem)
 	for _, problem := range problems {
 		problemsMap[problem.ID] = problem
@@ -46,20 +52,36 @@ func addProblemsName (ideas []*Idea) {
 
 func GetProblemIdeas(problemId uint) []*Idea {
 	ideas := []*Idea{}
-	GetDB().Table("ideas").Select("id, action_description, results_description, money_price, time_price").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
+	GetDB().
+		Table("ideas").
+		Select("id, action_description, results_description, money_price, time_price").
+		Where("problem_id = ? AND is_published = 1", problemId).
+		Scan(&ideas)
 	return ideas
 }
 
-func GetUserIdeas(userId uint) []*Idea {
+func GetUserIdeas(userId uint, ideasMappers []IdeasMapper) []*Idea {
 	ideas := []*Idea{}
-	GetDB().Table("ideas").Select("id, problem_id, action_description, results_description, money_price, time_price, is_published").Where("user_id = ?", userId).Scan(&ideas)
-	addProblemsName(ideas)
+	GetDB().
+		Table("ideas").
+		Select("id, problem_id, action_description, results_description, money_price, time_price, is_published").
+		Where("user_id = ?", userId).
+		Scan(&ideas)
+	if len(ideasMappers) > 0 {
+		for _, mapper := range ideasMappers {
+			mapper(ideas)
+		}
+	}
 	return ideas
 }
 
 func (idea *Idea) Save(userID uint, problemID uint, actionDescription string, resultsDescription string, moneyPrice float32, timePrice int) bool {
 	existingIdea := &Idea{}
-	GetDB().Table("ideas").Select("action_description").Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).First(existingIdea)
+	GetDB().
+		Table("ideas").
+		Select("action_description").
+		Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).
+		First(existingIdea)
 	if existingIdea.ActionDescription == actionDescription {
 		return false
 	}
