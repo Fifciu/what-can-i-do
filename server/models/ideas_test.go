@@ -9,8 +9,12 @@ import (
 func TestGetProblemIdeas(t *testing.T) {
 	// Arrange
 	problemId := uint(1)
-	Db, mock, _ := sqlmock.New()
+	Db, mock, err := sqlmock.New()
 	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
 	sqlRows := sqlmock.NewRows([]string{
 		"id",
 		"problem_id",
@@ -43,8 +47,12 @@ func TestGetProblemIdeas(t *testing.T) {
 func TestGetUserIdeas(t *testing.T) {
 	// Arrange
 	userId := uint(1)
-	Db, mock, _ := sqlmock.New()
+	Db, mock, err := sqlmock.New()
 	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
 	sqlRows := sqlmock.NewRows([]string{
 		"id",
 		"problem_id",
@@ -71,8 +79,12 @@ func TestGetUserIdeas(t *testing.T) {
 
 func TestMapperAddProblemsName(t *testing.T) {
 	// Arrange
-	Db, mock, _ := sqlmock.New()
+	Db, mock, err := sqlmock.New()
 	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
 	sqlRows := sqlmock.NewRows([]string{
 		"id",
 		"name",
@@ -108,8 +120,12 @@ func TestMapperAddProblemsName(t *testing.T) {
 
 func TestSaveIdea(t *testing.T) {
 	// Arrange
-	Db, mock, _ := sqlmock.New()
+	Db, mock, err := sqlmock.New()
 	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
 	sqlRows := sqlmock.NewRows([]string{
 		"id",
 		"problem_id",
@@ -120,17 +136,17 @@ func TestSaveIdea(t *testing.T) {
 		"money_price",
 		"time_price",
 	}).
-		AddRow(1, 1, 1, 1, "Test 1a", "Test 1b", 12.33, 0)
-	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Test 1a", 1).WillReturnRows(sqlRows)
-	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Test 2a", 1).WillReturnRows(sqlRows)
+		AddRow(1, 1, 1, 1, "Test", "Test 1b", 12.33, 0)
+	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Test", 1).WillReturnRows(sqlRows)
+	mock.ExpectQuery("^SELECT (.+) FROM `ideas` (.+)action_description = \\? AND problem_id = \\?(.+)").WithArgs("Dzong", 1).WillReturnRows(sqlRows)
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `ideas`").WithArgs(1, 1, false, "Dzong", "Asds", float32(12.1), 0).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
 
 	// Act
 	idea := Idea{}
-	success1 := idea.Save(1, 1, "Test 1a", "Asds", 12.1, 0)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `ideas`").WithArgs(1, 1, false, "Test 2a", "Asds", float32(12.1), 0).WillReturnResult(sqlmock.NewResult(1, 1))
-	success2 := idea.Save(1, 1, "Test 2a", "Asds", 12.1, 0)
+	success1 := idea.Save(1, 1, "Test", "Asds", 12.1, 0)
+	success2 := idea.Save(1, 1, "Dzong", "Asds", 12.1, 0)
 
 	// Assert
 	if success1 {

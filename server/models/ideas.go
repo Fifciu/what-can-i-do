@@ -1,5 +1,9 @@
 package models
 
+import (
+	"sort"
+)
+
 type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
@@ -24,12 +28,14 @@ func MapperAddProblemsName (ideas []*Idea) {
 	for _, idea := range ideas {
 		problemIdsSet[idea.ProblemID] = true
 	}
-	problemIds := make([]uint, len(problemIdsSet))
+	problemIds := make([]int, len(problemIdsSet))
 	counter := 0
 	for id, _ := range problemIdsSet {
-		problemIds[counter] = id
+		problemIds[counter] = int(id)
 		counter++
 	}
+	sort.Ints(problemIds)
+
 	problems := []*Problem{}
 	GetDB().
 		Table("problems").
