@@ -25,7 +25,7 @@ func GetUserByEmail(userEmail string) *User {
 	return user
 }
 
-func GetUserById(userId string) *User {
+func GetUserById(userId uint) *User {
 	user := &User{}
 
 	GetDB().Table("users").Select("*").Where("id = ?", userId).First(user)

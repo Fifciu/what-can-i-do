@@ -36,7 +36,7 @@ func TestGetProblemIdeas(t *testing.T) {
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
 	}
 }
 
