@@ -46,13 +46,12 @@ func (user *User) CreateOrGet(email string, fullname string, provider string) (*
 
 	newUser := &User{}
 
-	user.Email = email
-	user.Fullname = fullname
-	user.Provider = provider
-	user.Flags = 0
-	d := GetDB().Create(user).Scan(&newUser)
+	newUser.Email = email
+	newUser.Fullname = fullname
+	newUser.Provider = provider
+	newUser.Flags = 0
+	d := GetDB().Create(newUser)
 	if d.Error != nil {
-		fmt.Println("WHP", d.Error)
 		return nil, errors.New("Couldn't add user to database")
 	}
 	return newUser, nil
