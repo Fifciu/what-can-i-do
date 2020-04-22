@@ -86,14 +86,9 @@ func ProblemExists(problemId uint) bool {
 }
 
 func (problem *Problem) Save(userId uint, name string, description string) bool {
-	existingProblem := &Problem{}
-	GetDB().Table("problems").Select("*").Where("name = ? AND is_published = 1", name).First(existingProblem)
-
-	if existingProblem.Name == name {
-		return false
-	}
-
+	// TODO Max requests per time for user
 	existingUnpublishedProblem := &Problem{}
+	// Antyspam
 	GetDB().Table("problems").Select("*").Where("name = ? AND description = ? AND is_published = 0", name, description).First(existingUnpublishedProblem)
 	if existingUnpublishedProblem.ID > 0 {
 		return false

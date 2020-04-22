@@ -123,3 +123,105 @@ func TestGetProblem (t *testing.T) {
 		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
 	}
 }
+
+func TestGetProblemsByQuery (t *testing.T) {
+	// Arrange
+	query := "cor"
+	queryPattern := "%" + query + "%"
+	Db, mock, err := sqlmock.New()
+	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+	sqlRows := sqlmock.NewRows([]string{
+		"id",
+		"user_id",
+		"name",
+		"slug",
+		"description",
+		"is_published",
+	}).
+		AddRow(1, 1, "Coronavirus", "coron", "adasdsdasdasdasa", 1)
+	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(name LIKE \\? AND is_published = 1").WithArgs(queryPattern).WillReturnRows(sqlRows)
+
+	// Act
+	GetProblemsByQuery(query)
+
+	// Assert
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestProblemExists (t *testing.T) {
+	// Arrange
+	problemId := uint(1)
+	Db, mock, err := sqlmock.New()
+	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+	sqlRows := sqlmock.NewRows([]string{
+		"id",
+		"user_id",
+		"name",
+		"slug",
+		"description",
+		"is_published",
+	}).
+		AddRow(problemId, 1, "Coronavirus", "coron", "adasdsdasdasdasa", 1)
+	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(id = \\?(.+)").WithArgs(problemId).WillReturnRows(sqlRows)
+
+	// Act
+	ProblemExists(problemId)
+
+	// Assert
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestProblemSave (t *testing.T) {
+	// Arrange
+	problemId := uint(1)
+	Db, mock, err := sqlmock.New()
+	db, _ = gorm.Open("mysql", Db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+	sqlRows := sqlmock.NewRows([]string{
+		"id",
+		"user_id",
+		"name",
+		"slug",
+		"description",
+		"is_published",
+	}).
+		AddRow(problemId, 1, "Coronavirus", "coron", "adasdsdasdasdasa", 1)
+	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(name = \\? AND description = \\?(.+)").WithArgs("Coronavirus", "adasdsdasdasdasa").WillReturnRows(sqlRows)
+	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(name = \\? AND description = \\?(.+)").WithArgs("Properone", "adasdsdasdasdasa").WillReturnRows(sqlRows)
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `problems`").WithArgs(1, "Properone", "properone", "adasdsdasdasdasa", false).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	// Act
+	problemInstance := &Problem{}
+	success1 := problemInstance.Save(1, "Coronavirus", "adasdsdasdasdasa")
+	success2 := problemInstance.Save(1, "Properone", "adasdsdasdasdasa")
+
+	if success1 {
+		t.Errorf("Anti same payload spam filter did not work")
+	}
+
+	if !success2 {
+		t.Errorf("Could not add new problem")
+	}
+
+	// Assert
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
+	}
+}
