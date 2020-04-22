@@ -1,6 +1,8 @@
 package models
 
-import "github.com/gosimple/slug"
+import (
+	"github.com/gosimple/slug"
+)
 
 type Problem struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
@@ -32,6 +34,7 @@ func GetProblem(problemSlug string, withIdeas bool) *Problem {
 	problem := &Problem{}
 
 	GetDB().Table("problems").Select("*").Where("slug = ? AND is_published = 1", problemSlug).First(problem)
+
 	if withIdeas {
 		problemId := problem.ID
 		ideas := []*Idea{}
@@ -47,6 +50,7 @@ func GetProblem(problemSlug string, withIdeas bool) *Problem {
 			counter++
 		}
 		users := []*User{}
+		//I could use join instead
 		GetDB().Table("users").Select("id, fullname").Where("id IN (?)", userIds).Scan(&users)
 
 		userIdUserMap := make(map[uint]*User)
