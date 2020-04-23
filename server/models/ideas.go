@@ -2,6 +2,7 @@ package models
 
 import (
 	"sort"
+	"errors"
 )
 
 type Idea struct {
@@ -19,6 +20,31 @@ type Idea struct {
 
 func (idea Idea) TableName() string {
 	return "ideas"
+}
+
+func (idea *Idea) Validate() error {
+	// TODO TimePrice validator with special values
+	if idea.ProblemID < 1 {
+		return errors.New("Bad Problem ID")
+	}
+
+	if !ProblemExists(idea.ProblemID) {
+		return errors.New("Problem does not exist")
+	}
+
+	if len(idea.ActionDescription) < 15 {
+		return errors.New("Idea's action description must have at least 15 characters")
+	}
+
+	if len(idea.ResultsDescription) < 15 {
+		return errors.New("Idea's results description must have at least 15 characters")
+	}
+
+	if idea.MoneyPrice < 0 {
+		return errors.New("Idea's price be bigger or equal $0")
+	}
+
+	return nil
 }
 
 type IdeasMapper func ([]*Idea)
