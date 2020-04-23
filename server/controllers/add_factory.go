@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"github.com/gorilla/context"
 	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 )
 
 func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := json.NewDecoder(r.Body).Decode(entity)
+		copyEntity := entity.GetNewInstance()
+		err := json.NewDecoder(r.Body).Decode(copyEntity)
 		response := u.Status(true)
 
 		// No input
@@ -20,16 +22,16 @@ func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 		}
 
 		claims := context.Get(r, "CurrentUser").(*Claims)
-		entity.UserID = claims.ID
+		copyEntity.SetUserId(claims.ID)
 
 		// Bad input
-		if err := entity.Validate(); err != nil {
+		if err := copyEntity.Validate(); err != nil {
 			response = u.Message(false, err.Error())
 			u.RespondWithCode(w, response, http.StatusBadRequest)
 			return
 		}
 
-		if err := entity.Save(); err != nil {
+		if err := copyEntity.Save(); err != nil {
 			response = u.Message(false, err.Error())
 			u.RespondWithCode(w, response, http.StatusBadRequest)
 			return

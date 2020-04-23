@@ -144,16 +144,32 @@ func TestSaveIdea(t *testing.T) {
 	mock.ExpectExec("INSERT INTO `ideas`").WithArgs(1, 1, false, "Dzong", "Asds", float32(12.1), 0).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
+	idea := Idea{
+		ProblemID: 1,
+		UserID: 1,
+		ActionDescription: "Test",
+		ResultsDescription: "Asds",
+		MoneyPrice: 12.1,
+		TimePrice: 0,
+	}
+	idea2 := Idea{
+		ProblemID: 1,
+		UserID: 1,
+		ActionDescription: "Dzong",
+		ResultsDescription: "Asds",
+		MoneyPrice: 12.1,
+		TimePrice: 0,
+	}
+
 	// Act
-	idea := Idea{}
-	success1 := idea.Save(1, 1, "Test", "Asds", 12.1, 0)
-	success2 := idea.Save(1, 1, "Dzong", "Asds", 12.1, 0)
+	err1 := idea.Save()
+	err2 := idea2.Save()
 
 	// Assert
-	if success1 {
+	if err1 == nil {
 		t.Errorf("It allows to add duplicated as existing idea's action")
 	}
-	if !success2 {
+	if err2 != nil {
 		t.Errorf("It does not allow to add an idea")
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	controllers "github.com/fifciu/what-can-i-do/server/controllers"
+	models "github.com/fifciu/what-can-i-do/server/models"
 	middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
 
 	"github.com/gorilla/handlers"
@@ -59,7 +60,7 @@ func main() {
 		middlewares.AuthUser(http.HandlerFunc(controllers.AddProblem))).Methods("POST")
 
 	router.Handle("/ideas",
-		middlewares.AuthUser(http.HandlerFunc(controllers.AddIdea))).Methods("POST")
+		middlewares.AuthUser(controllers.AddRecordFactory(&models.Idea{}))).Methods("POST")
 
 	router.Handle("/ideas/mine",
 		middlewares.AuthUser(http.HandlerFunc(controllers.GetMineIdeas))).Methods("POST")

@@ -107,24 +107,26 @@ func GetUserIdeas(userId uint, ideasMappers []IdeasMapper) []*Idea {
 	return ideas
 }
 
-func (idea *Idea) Save(userID uint, problemID uint, actionDescription string, resultsDescription string, moneyPrice float32, timePrice int) bool {
+func (idea *Idea) Save() error {
 	existingIdea := &Idea{}
 	GetDB().
 		Table("ideas").
 		Select("action_description").
-		Where("action_description = ? AND problem_id = ? AND is_published = 1", actionDescription, problemID).
+		Where("action_description = ? AND problem_id = ? AND is_published = 1", idea.ActionDescription, idea.ProblemID).
 		First(existingIdea)
-	if existingIdea.ActionDescription == actionDescription {
-		return false
+	if existingIdea.ActionDescription == idea.ActionDescription {
+		return errors.New("This action already exist for selected problem")
 	}
 
-	idea.UserID = userID
-	idea.ProblemID = problemID
-	idea.ActionDescription = actionDescription
-	idea.ResultsDescription = resultsDescription
-	idea.MoneyPrice = moneyPrice
-	idea.TimePrice = timePrice
 	idea.IsPublished = false
 	GetDB().Create(idea)
-	return true
+	return nil
+}
+
+func (idea *Idea) SetUserId(userId uint) {
+	idea.UserID = userId
+}
+
+func (idea *Idea) GetNewInstance() DatabaseType {
+	return &Idea{}
 }

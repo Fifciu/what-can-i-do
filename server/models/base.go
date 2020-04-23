@@ -9,6 +9,13 @@ _ "github.com/jinzhu/gorm/dialects/mysql"
 "github.com/joho/godotenv"
 )
 
+type DatabaseType interface {
+	SetUserId(userId uint)
+	Validate() error
+	Save() error
+	GetNewInstance() DatabaseType
+}
+
 var db *gorm.DB
 
 func init() {
