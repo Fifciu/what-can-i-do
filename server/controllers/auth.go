@@ -44,6 +44,18 @@ func getJwtTtl () (uint, error) {
 	return uint(jwtTtl), nil
 }
 
+func getJwtTimeOffset () (uint, error) {
+	timeOffset := os.Getenv("jwt_offset")
+	timeOffsetNumber, err := strconv.Atoi(timeOffset)
+	if err != nil {
+		return uint(0), nil
+	}
+	if timeOffsetNumber == 0 {
+		timeOffsetNumber = 60
+	}
+	return uint(timeOffsetNumber), nil
+}
+
 func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
 	jwtTtl, err := getJwtTtl()
 	if err != nil {
@@ -142,11 +154,6 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
-	response := u.Status(true)
-	response["user"] = map[string]string{
-		"email": user.Email(),
-		"name": user.Name(),
-	}
 
 	databaseUser := &models.User{}
 	newUser, err := databaseUser.CreateOrGet(user.Email(), user.Name(), vars["provider"])
@@ -167,6 +174,11 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
+	response := u.Status(true)
+	response["user"] = map[string]string{
+		"email": user.Email(),
+		"name": user.Name(),
+	}
 	response["token"] = tokenString
 	response["expires_at"] = expirationTime
 
@@ -174,21 +186,16 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func RefreshToken (w http.ResponseWriter, r *http.Request) {
-
-	timeOffset := os.Getenv("jwt_offset")
-	timeOffsetNumber, err := strconv.Atoi(timeOffset)
+	timeOffsetNumber, err := getJwtTimeOffset()
 	if err != nil {
-		u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusInternalServerError)
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusNotFound)
 		return
-	}
-	if timeOffsetNumber == 0 {
-		timeOffsetNumber = 60
 	}
 
 	claims := context.Get(r, "CurrentUser").(*Claims)
 
 	// Expired offset
-	//fmt.Println(time.Unix(claims.ExpiresAt, 0).Sub(time.Now()), time.Duration(timeOffsetNumber)*time.Minute*-1)
 	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) < time.Duration(timeOffsetNumber)*time.Minute*-1 {
 		u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusBadRequest)
 		return

@@ -9,12 +9,20 @@ import (
 	"testing"
 	"time"
 	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/gorilla/context"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type InitAuthResponse struct {
 	Status bool
 	RedirectUrl string
 	Message string
+}
+
+type RefreshTokenResponse struct {
+	Status bool
+	Token string
+	ExpiresAt time.Time
 }
 
 func TestGenerateJWT (t *testing.T) {
@@ -90,5 +98,56 @@ func TestInitAuth (t *testing.T) {
 
 	if !responseEnt.Status || len(responseEnt.RedirectUrl) < 10 {
 		t.Errorf("Did not return auth link when it should")
+	}
+}
+
+func TestRefreshToken (t *testing.T) {
+	req, err := http.NewRequest("POST", "/auth/init/bad-provider", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	req2, err := http.NewRequest("POST", "/auth/init/google", nil)
+	req2 = mux.SetURLVars(req2, map[string]string{"provider": "google"})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	u.InitOauthProviders("http://localhost:8090")
+	jwtOffset, err := getJwtTimeOffset()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	expiredTime := time.Now().Add(time.Duration(jwtOffset) * time.Minute * -2)
+	context.Set(req, "CurrentUser", &Claims{
+		ID: 2,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expiredTime.Unix(),
+		},
+	})
+	context.Set(req2, "CurrentUser", &Claims{
+		ID: 2,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Unix(),
+		},
+	})
+
+	rr := httptest.NewRecorder()
+	rr2 := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(RefreshToken)
+
+	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rr2, req2)
+
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("Bad response code, got %v wanted %v", status, http.StatusBadRequest)
+	}
+
+	responseEnt := &RefreshTokenResponse{}
+	err = json.NewDecoder(rr2.Body).Decode(responseEnt)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if !responseEnt.Status || len(responseEnt.Token) < 10 {
+		t.Errorf("Did not return proper token and date")
 	}
 }
