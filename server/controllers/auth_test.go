@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 	"github.com/gorilla/context"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -23,6 +24,11 @@ type RefreshTokenResponse struct {
 	Status bool
 	Token string
 	ExpiresAt time.Time
+}
+
+type GetMeResponse struct {
+	Status bool
+	User models.User
 }
 
 func TestGenerateJWT (t *testing.T) {
@@ -102,12 +108,11 @@ func TestInitAuth (t *testing.T) {
 }
 
 func TestRefreshToken (t *testing.T) {
-	req, err := http.NewRequest("POST", "/auth/init/bad-provider", nil)
+	req, err := http.NewRequest("POST", "/refresh", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	req2, err := http.NewRequest("POST", "/auth/init/google", nil)
-	req2 = mux.SetURLVars(req2, map[string]string{"provider": "google"})
+	req2, err := http.NewRequest("POST", "/refresh", nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -148,6 +153,39 @@ func TestRefreshToken (t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	if !responseEnt.Status || len(responseEnt.Token) < 10 {
+		t.Errorf("Did not return proper token and date")
+	}
+}
+
+func TestGetMe (t *testing.T) {
+	req, err := http.NewRequest("POST", "/", nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	expectedFullname := "Fif Jot"
+	expectedEmail := "fif@gmail.com"
+	context.Set(req, "CurrentUser", &Claims{
+		ID: 2,
+		Fullname: expectedFullname,
+		Email: expectedEmail,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Unix(),
+		},
+	})
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(GetMe)
+
+	// Act
+	handler.ServeHTTP(rr, req)
+
+	// Assert
+	responseEnt := &GetMeResponse{}
+	err = json.NewDecoder(rr.Body).Decode(responseEnt)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	if !responseEnt.Status || responseEnt.User.Email != expectedEmail || responseEnt.User.Fullname != expectedFullname {
 		t.Errorf("Did not return proper token and date")
 	}
 }
