@@ -46,9 +46,12 @@ func TestAddRecordFactory(t *testing.T) {
 	}
 	bodyJson, _ := json.Marshal(bodyMap)
 	req, err := http.NewRequest("POST", "/ideas", strings.NewReader(body.Encode()))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	req2, err2 := http.NewRequest("POST", "/ideas", bytes.NewReader(bodyJson))
-	if err != nil || err2 != nil {
-		t.Fatal(err)
+	if err2 != nil {
+		t.Fatal(err2.Error())
 	}
 	rr := httptest.NewRecorder()
 	rr2 := httptest.NewRecorder()

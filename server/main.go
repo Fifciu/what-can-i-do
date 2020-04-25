@@ -8,6 +8,7 @@ import (
 	controllers "github.com/fifciu/what-can-i-do/server/controllers"
 	models "github.com/fifciu/what-can-i-do/server/models"
 	middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
+	u "github.com/fifciu/what-can-i-do/server/utils"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -26,12 +27,7 @@ func main() {
 	}
 	pwaBaseUrl = pwaBaseUrl + "/"
 
-	gomniauth.SetSecurityKey("SOME_AUTH_KEY")
-	googleClientId := os.Getenv("google_client_id")
-	googleClientSecret := os.Getenv("google_client_secret")
-	gomniauth.WithProviders(
-		google.New(googleClientId, googleClientSecret, pwaBaseUrl + "auth/google"),
-	)
+	u.InitOauthProviders(pwaBaseUrl)
 
 	router := mux.NewRouter()
 

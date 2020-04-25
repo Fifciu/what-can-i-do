@@ -32,14 +32,22 @@ type ClaimsUser struct {
 var jwtSecretKey = os.Getenv("jwt_key")
 var jwtKey = []byte(jwtSecretKey)
 
-func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
+func getJwtTtl () (uint, error) {
 	jwtTtlString := os.Getenv("jwt_ttl")
 	jwtTtl, err := strconv.Atoi(jwtTtlString)
 	if err != nil {
-		return "", time.Time{}, errors.New("Could not read JWT TT")
+		return 0, errors.New("Bad value for jwt_ttl in config")
 	}
 	if jwtTtl == 0 {
 		jwtTtl = 5
+	}
+	return uint(jwtTtl), nil
+}
+
+func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
+	jwtTtl, err := getJwtTtl()
+	if err != nil {
+		return "", time.Time{}, err
 	}
 	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
 	claims := &Claims{
@@ -58,39 +66,35 @@ func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
 	return tokenString, expirationTime, nil
 }
 
-func acceptedProvider (w http.ResponseWriter, r *http.Request) bool {
-	vars := mux.Vars(r)
+func acceptedProvider (pickedProvider string) error {
 	acceptedProviders := os.Getenv("supported_oauth_providers")
 	if acceptedProviders == "" {
-		response := u.Message(false, "Accepted providers not configured")
-		u.RespondWithCode(w, response, http.StatusInternalServerError)
-		return false
+		return errors.New("Accepted providers not configured")
 	}
 
 	providers := strings.Split(acceptedProviders, ",")
 	hasRequestProvider := false
 	for _, provider := range providers {
-		if provider == vars["provider"] {
+		if provider == pickedProvider {
 			hasRequestProvider = true
 			break
 		}
 	}
 
 	if !hasRequestProvider {
-		response := u.Message(false, "Not accepted provider")
-		u.RespondWithCode(w, response, http.StatusInternalServerError)
-		return false
+		return errors.New("Not accepted provider")
 	}
-	return true
+	return nil
 }
 
 func InitAuth(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 
-	if !acceptedProvider(w, r) {
+	if err := acceptedProvider(vars["provider"]); err != nil {
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusNotFound)
 		return
 	}
-
-	vars := mux.Vars(r)
 
 	provider, err := gomniauth.Provider(vars["provider"])
 	if err != nil {
@@ -110,10 +114,13 @@ func InitAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func CompleteAuth(w http.ResponseWriter, r *http.Request) {
-	if !acceptedProvider(w, r) {
+	vars := mux.Vars(r)
+
+	if err := acceptedProvider(vars["provider"]); err != nil {
+		response := u.Message(false, err.Error())
+		u.RespondWithCode(w, response, http.StatusNotFound)
 		return
 	}
-	vars := mux.Vars(r)
 
 	provider, err := gomniauth.Provider(vars["provider"])
 	if err != nil {
