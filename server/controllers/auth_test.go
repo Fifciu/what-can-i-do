@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
-	u "github.com/fifciu/what-can-i-do/server/utils"
-	"github.com/fifciu/what-can-i-do/server/models"
+	u "../utils"
+	"../models"
 	"github.com/gorilla/context"
 	"github.com/dgrijalva/jwt-go"
 )

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"net/http"
-	"github.com/fifciu/what-can-i-do/server/models"
+	"../models"
 	"strconv"
 	"strings"
 )

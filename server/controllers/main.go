@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	u "github.com/fifciu/what-can-i-do/server/utils"
+	u "../utils"
 )
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {

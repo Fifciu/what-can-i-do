@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 	"github.com/gorilla/context"
-	"github.com/fifciu/what-can-i-do/server/models"
+	"../models"
 )
 
 type MockEntity struct {

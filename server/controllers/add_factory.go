@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/gorilla/context"
-	u "github.com/fifciu/what-can-i-do/server/utils"
-	"github.com/fifciu/what-can-i-do/server/models"
+	u "../utils"
+	"../models"
 )
 
 func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {

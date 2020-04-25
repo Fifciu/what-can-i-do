@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/fifciu/what-can-i-do/server/controllers"
-	u "github.com/fifciu/what-can-i-do/server/utils"
+	"../controllers"
+	u "../utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
 )

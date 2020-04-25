@@ -3,6 +3,7 @@ package models
 import (
 	"sort"
 	"errors"
+	"../controllers"
 )
 
 type Idea struct {
@@ -19,6 +20,14 @@ type Idea struct {
 }
 
 func (idea Idea) TableName() string {
+	return "ideas"
+}
+
+func (idea *Idea) SingularName() string {
+	return "idea"
+}
+
+func (idea *Idea) PluralName() string {
 	return "ideas"
 }
 
@@ -92,18 +101,14 @@ func GetProblemIdeas(problemId uint) []*Idea {
 	return ideas
 }
 
-func GetUserIdeas(userId uint, ideasMappers []IdeasMapper) []*Idea {
+func (idea *Idea) GetByUserId(userId uint) []*controllers.UserCreatedEntity {
 	ideas := []*Idea{}
 	GetDB().
 		Table("ideas").
 		Select("id, problem_id, action_description, results_description, money_price, time_price, is_published").
 		Where("user_id = ?", userId).
 		Scan(&ideas)
-	if len(ideasMappers) > 0 {
-		for _, mapper := range ideasMappers {
-			mapper(ideas)
-		}
-	}
+
 	return ideas
 }
 
