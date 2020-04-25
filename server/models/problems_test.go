@@ -101,18 +101,9 @@ func TestGetProblem (t *testing.T) {
 		"time_price",
 	}).
 		AddRow(1, 1, 1, 1, "Test", "Test 1b", 12.33, 0)
-	sqlRows4 := sqlmock.NewRows([]string{
-		"id",
-		"email",
-		"fullname",
-		"provider",
-		"flags",
-	}).
-		AddRow(1, "zardziol@gmail.com", "Tony", "google", 0)
 	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(slug = \\? AND is_published = 1(.+)").WithArgs(problemSlug).WillReturnRows(sqlRows)
 	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(slug = \\? AND is_published = 1(.+)").WithArgs(problemSlug).WillReturnRows(sqlRows2)
-	mock.ExpectQuery("^SELECT (.+) FROM `ideas` WHERE \\(problem_id = \\?(.+)").WithArgs(1).WillReturnRows(sqlRows3)
-	mock.ExpectQuery("^SELECT (.+) FROM `users` WHERE \\(id IN \\(\\?\\)(.+)").WithArgs(1).WillReturnRows(sqlRows4)
+	mock.ExpectQuery("^SELECT (.+) FROM `ideas` INNER JOIN users ON ideas.user_id = users.id WHERE \\(problem_id = \\?(.+)").WithArgs(1).WillReturnRows(sqlRows3)
 
 	// Act
 	GetProblem(problemSlug, false)

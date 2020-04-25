@@ -3,13 +3,13 @@ package models
 import (
 	"sort"
 	"errors"
-	"../controllers"
 )
 
 type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
-	ProblemName string `gorm:"-" json:"problem_name"`
+	Name string `json:"name" gorm:"-" `
+	ProblemName string `json:"problem_name" gorm:"-" `
 	UserID   uint    `json:"user_id"`
 	AuthorName string `gorm:"-" json:"author_name"`
 	IsPublished   bool    `json:"is_published"`
@@ -101,13 +101,17 @@ func GetProblemIdeas(problemId uint) []*Idea {
 	return ideas
 }
 
-func (idea *Idea) GetByUserId(userId uint) []*controllers.UserCreatedEntity {
+func (idea *Idea) GetByUserId(userId uint) []*Idea {
 	ideas := []*Idea{}
 	GetDB().
 		Table("ideas").
-		Select("id, problem_id, action_description, results_description, money_price, time_price, is_published").
+		Select("problems.name, ideas.id, ideas.problem_id, ideas.action_description, ideas.results_description, ideas.money_price, ideas.time_price, ideas.is_published").
+		Joins("INNER JOIN problems ON ideas.problem_id = problems.id").
 		Where("user_id = ?", userId).
 		Scan(&ideas)
+
+	//GetDB().Table("message").Select("message.*, user.name").Joins("INNER JOIN user ON user.id = message.user_id").Scan(&messages)
+
 
 	return ideas
 }

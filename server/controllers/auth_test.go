@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
-	u "../utils"
-	"../models"
+	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 	"github.com/gorilla/context"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -33,7 +33,7 @@ type GetMeResponse struct {
 
 func TestGenerateJWT (t *testing.T) {
 	// Arrange
-	claimsUser := &ClaimsUser{
+	claimsUser := &models.ClaimsUser{
 		ID:       1,
 		Fullname: "John Doe",
 		Email:    "john@doe.com",
@@ -122,13 +122,13 @@ func TestRefreshToken (t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	expiredTime := time.Now().Add(time.Duration(jwtOffset) * time.Minute * -2)
-	context.Set(req, "CurrentUser", &Claims{
+	context.Set(req, "CurrentUser", &models.Claims{
 		ID: 2,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiredTime.Unix(),
 		},
 	})
-	context.Set(req2, "CurrentUser", &Claims{
+	context.Set(req2, "CurrentUser", &models.Claims{
 		ID: 2,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Unix(),
@@ -164,7 +164,7 @@ func TestGetMe (t *testing.T) {
 	}
 	expectedFullname := "Fif Jot"
 	expectedEmail := "fif@gmail.com"
-	context.Set(req, "CurrentUser", &Claims{
+	context.Set(req, "CurrentUser", &models.Claims{
 		ID: 2,
 		Fullname: expectedFullname,
 		Email: expectedEmail,

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"../controllers"
-	u "../utils"
+	"github.com/fifciu/what-can-i-do/server/models"
+	u "github.com/fifciu/what-can-i-do/server/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
 )
@@ -24,7 +24,7 @@ func AuthUser(next http.Handler) http.Handler {
 		splitedHeader := strings.Split(authHeader, " ")
 		token := strings.Trim(splitedHeader[1], " ")
 
-		claims := &controllers.Claims{}
+		claims := &models.Claims{}
 		tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})

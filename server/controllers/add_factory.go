@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/gorilla/context"
-	u "../utils"
-	"../models"
+	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 )
 
 func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
@@ -21,7 +21,7 @@ func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 			return
 		}
 
-		claims := context.Get(r, "CurrentUser").(*Claims)
+		claims := context.Get(r, "CurrentUser").(*models.Claims)
 		copyEntity.SetUserId(claims.ID)
 
 		// Bad input

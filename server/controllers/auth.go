@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/objx"
-	u "../utils"
-	"../models"
+	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 	"github.com/dgrijalva/jwt-go"
 	"os"
 	"strconv"
@@ -15,19 +15,6 @@ import (
 	"errors"
 	"github.com/gorilla/context"
 )
-
-type Claims struct {
-	ID uint `json:"id"`
-	Fullname string `json:"fullname"`
-	Email string `json:"email"`
-	jwt.StandardClaims
-}
-
-type ClaimsUser struct {
-	ID uint `json:"id"`
-	Fullname string `json:"fullname"`
-	Email string `json:"email"`
-}
 
 var jwtSecretKey = os.Getenv("jwt_key")
 var jwtKey = []byte(jwtSecretKey)
@@ -56,13 +43,13 @@ func getJwtTimeOffset () (uint, error) {
 	return uint(timeOffsetNumber), nil
 }
 
-func generateJwt (claimsUser *ClaimsUser) (string, time.Time, error) {
+func generateJwt (claimsUser *models.ClaimsUser) (string, time.Time, error) {
 	jwtTtl, err := getJwtTtl()
 	if err != nil {
 		return "", time.Time{}, err
 	}
 	expirationTime := time.Now().Add(time.Duration(jwtTtl) * time.Minute)
-	claims := &Claims{
+	claims := &models.Claims{
 		ID: claimsUser.ID,
 		Fullname: claimsUser.Fullname,
 		Email: claimsUser.Email,
@@ -162,7 +149,7 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusInternalServerError)
 		return
 	}
-	claimsUser := &ClaimsUser{
+	claimsUser := &models.ClaimsUser{
 		ID: newUser.ID,
 		Fullname: newUser.Fullname,
 		Email: newUser.Email,
@@ -193,7 +180,7 @@ func RefreshToken (w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims := context.Get(r, "CurrentUser").(*Claims)
+	claims := context.Get(r, "CurrentUser").(*models.Claims)
 
 	// Expired offset
 	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) < time.Duration(timeOffsetNumber)*time.Minute*-1 {
@@ -201,7 +188,7 @@ func RefreshToken (w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claimsUser := &ClaimsUser{
+	claimsUser := &models.ClaimsUser{
 		ID: claims.ID,
 		Fullname: claims.Fullname,
 		Email: claims.Email,
@@ -221,7 +208,7 @@ func RefreshToken (w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMe(w http.ResponseWriter, r *http.Request) {
-	claims := context.Get(r, "CurrentUser").(*Claims)
+	claims := context.Get(r, "CurrentUser").(*models.Claims)
 	response := u.Status(true)
 	response["user"] = map[string]interface{}{
 		"fullname": claims.Fullname,

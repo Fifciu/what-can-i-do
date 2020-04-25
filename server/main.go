@@ -12,8 +12,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/stretchr/gomniauth"
-	"github.com/stretchr/gomniauth/providers/google"
 )
 
 func main() {
@@ -58,8 +56,8 @@ func main() {
 	router.Handle("/ideas",
 		middlewares.AuthUser(controllers.AddRecordFactory(&models.Idea{}))).Methods("POST")
 
-	router.Handle("/ideas/mine",
-		middlewares.AuthUser(http.HandlerFunc(controllers.GetMineIdeas))).Methods("POST")
+	//router.Handle("/ideas/mine",
+	//	middlewares.AuthUser(http.HandlerFunc(controllers.GetMineIdeas))).Methods("POST")
 
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")

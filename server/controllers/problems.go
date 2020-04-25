@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	u "../utils"
-	"../models"
+	u "github.com/fifciu/what-can-i-do/server/utils"
+	"github.com/fifciu/what-can-i-do/server/models"
 	"github.com/gorilla/context"
 )
 
@@ -41,7 +41,7 @@ func GetProblems(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMineProblems(w http.ResponseWriter, r *http.Request) {
-	claims := context.Get(r, "CurrentUser").(*Claims)
+	claims := context.Get(r, "CurrentUser").(*models.Claims)
 	response := u.Status(true)
 	response["problems"] = models.GetUserProblems(claims.ID)
 	u.Respond(w, response)
@@ -92,7 +92,7 @@ func AddProblem(w http.ResponseWriter, r *http.Request) {
 		u.RespondWithCode(w, response, http.StatusBadRequest)
 		return
 	}
-	claims := context.Get(r, "CurrentUser").(*Claims)
+	claims := context.Get(r, "CurrentUser").(*models.Claims)
 
 	if !problem.Save(claims.ID, problem.Name, problem.Description) {
 		response = u.Message(false, "This problem already exists")

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 	"github.com/gorilla/context"
-	"../models"
+	"github.com/fifciu/what-can-i-do/server/models"
 )
 
 type MockEntity struct {
@@ -55,7 +55,7 @@ func TestAddRecordFactory(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 	rr2 := httptest.NewRecorder()
-	context.Set(req2, "CurrentUser", &Claims{ID: 2})
+	context.Set(req2, "CurrentUser", &models.Claims{ID: 2})
 	handler := AddRecordFactory(&MockEntity{})
 
 	// Act

@@ -45,7 +45,7 @@ func TestGetProblemIdeas(t *testing.T) {
 	}
 }
 
-func TestGetUserIdeas(t *testing.T) {
+func TestGetByUserId(t *testing.T) {
 	// Arrange
 	userId := uint(1)
 	Db, mock, err := sqlmock.New()
@@ -68,7 +68,8 @@ func TestGetUserIdeas(t *testing.T) {
 	mock.ExpectQuery("^SELECT (.+) FROM `ideas` WHERE \\(user_id = \\?\\)").WithArgs(userId).WillReturnRows(sqlRows)
 
 	// Act
-	ideas := GetUserIdeas(userId, []IdeasMapper{})
+	idea := &Idea{}
+	ideas := idea.GetByUserId(userId)
 
 	// Assert
 	for _, idea := range ideas {

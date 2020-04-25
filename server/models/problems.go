@@ -38,30 +38,12 @@ func GetProblem(problemSlug string, withIdeas bool) *Problem {
 	if withIdeas {
 		problemId := problem.ID
 		ideas := []*Idea{}
-		GetDB().Table("ideas").Select("*").Where("problem_id = ? AND is_published = 1", problemId).Scan(&ideas)
-		userIdsSet := make(map[uint]bool)
-		for _, idea := range ideas {
-			userIdsSet[idea.UserID] = true
-		}
-		userIds := make([]uint, len(userIdsSet))
-		counter := 0
-		for id, _ := range userIdsSet {
-			userIds[counter] = id
-			counter++
-		}
-		users := []*User{}
-		//I could use join instead
-		GetDB().Table("users").Select("id, fullname").Where("id IN (?)", userIds).Scan(&users)
-
-		userIdUserMap := make(map[uint]*User)
-		for _, user := range users {
-			userIdUserMap[user.ID] = user
-		}
-
-		for i, idea := range ideas {
-			ideas[i].AuthorName = userIdUserMap[idea.UserID].Fullname
-
-		}
+		GetDB().
+			Table("ideas").
+			Select("ideas.*, users.fullname as author_name").
+			Joins("INNER JOIN users ON ideas.user_id = users.id").
+			Where("problem_id = ? AND is_published = 1", problemId).
+			Scan(&ideas)
 		problem.Ideas = ideas
 	}
 
