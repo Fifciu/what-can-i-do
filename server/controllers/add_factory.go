@@ -16,7 +16,7 @@ func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 
 		// No input
 		if err != nil {
-			response = u.Message(false, "Data not provided")
+			response = u.Message(false, err.Error())
 			u.RespondWithCode(w, response, http.StatusBadRequest)
 			return
 		}
@@ -36,6 +36,7 @@ func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 			u.RespondWithCode(w, response, http.StatusBadRequest)
 			return
 		}
+		response["entity"] = copyEntity
 		u.Respond(w, response)
 	})
 }
