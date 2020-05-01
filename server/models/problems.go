@@ -18,16 +18,29 @@ func (problem Problem) TableName() string {
 	return "problems"
 }
 
+func (problem *Problem) SingularName() string {
+	return "problem"
+}
+
+func (problem *Problem) PluralName() string {
+	return "problems"
+}
+
 func GetAllProblems() []*Problem {
 	problems := []*Problem{}
 	GetDB().Table("problems").Select("*").Where("is_published = 1").Scan(&problems)
 	return problems
 }
 
-func GetUserProblems(userID uint) []*Problem {
+func (problem *Problem) GetByUserId(userId uint) []UserCreatedEntity {
 	problems := []*Problem{}
-	GetDB().Table("problems").Select("*").Where("user_id = ?", userID).Scan(&problems)
-	return problems
+	GetDB().Table("problems").Select("*").Where("user_id = ?", userId).Scan(&problems)
+
+	uces := make([]UserCreatedEntity, len(problems))
+	for i, problem := range problems {
+		uces[i] = problem
+	}
+	return uces
 }
 
 func GetProblem(problemSlug string, withIdeas bool) *Problem {

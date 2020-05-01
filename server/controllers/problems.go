@@ -40,13 +40,6 @@ func GetProblems(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, response)
 }
 
-func GetMineProblems(w http.ResponseWriter, r *http.Request) {
-	claims := context.Get(r, "CurrentUser").(*models.Claims)
-	response := u.Status(true)
-	response["problems"] = models.GetUserProblems(claims.ID)
-	u.Respond(w, response)
-}
-
 func GetProblemsByQuery(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	problems := models.GetProblemsByQuery(vars["searchQuery"])

@@ -44,7 +44,7 @@ func main() {
 		controllers.GetProblems).Methods("GET")
 
 	router.Handle("/problems/mine",
-		middlewares.AuthUser(http.HandlerFunc(controllers.GetMineProblems))).Methods("POST")
+		middlewares.AuthUser(controllers.GetMineFactory(&models.Problem{}))).Methods("POST")
 
 	router.HandleFunc("/problems/{problemSlug}",
 		controllers.GetCertainProblem).Methods("GET")

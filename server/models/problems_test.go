@@ -34,7 +34,7 @@ func TestGetAllProblems (t *testing.T) {
 	}
 }
 
-func TestGetUserProblems (t *testing.T) {
+func TestGetProblemsByUserId(t *testing.T) {
 	// Arrange
 	userId := uint(1)
 	Db, mock, err := sqlmock.New()
@@ -55,11 +55,18 @@ func TestGetUserProblems (t *testing.T) {
 	mock.ExpectQuery("^SELECT (.+) FROM `problems` WHERE \\(user_id = \\?(.+)").WithArgs(userId).WillReturnRows(sqlRows)
 
 	// Act
-	GetUserProblems(userId)
+	problem := &Problem{}
+	problems := problem.GetByUserId(userId)
+	problemsInType := make([]*Problem, len(problems))
+	for i, idea := range problems {
+		problemsInType[i] = idea.(*Problem)
+	}
 
 	// Assert
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("Bad select query. There were unfulfilled expectations: %s", err)
+	for _, idea := range problemsInType {
+		if idea.UserID != userId {
+			t.Errorf("It fetches ideas with bad Problem ID")
+		}
 	}
 }
 

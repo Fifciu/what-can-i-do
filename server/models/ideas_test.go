@@ -45,7 +45,7 @@ func TestGetProblemIdeas(t *testing.T) {
 	}
 }
 
-func TestGetByUserId(t *testing.T) {
+func TestGetIdeasByUserId(t *testing.T) {
 	// Arrange
 	userId := uint(1)
 	Db, mock, err := sqlmock.New()
@@ -70,9 +70,13 @@ func TestGetByUserId(t *testing.T) {
 	// Act
 	idea := &Idea{}
 	ideas := idea.GetByUserId(userId)
+	ideasInType := make([]*Idea, len(ideas))
+	for i, idea := range ideas {
+		ideasInType[i] = idea.(*Idea)
+	}
 
 	// Assert
-	for _, idea := range ideas {
+	for _, idea := range ideasInType {
 		if idea.UserID != userId {
 			t.Errorf("It fetches ideas with bad Problem ID")
 		}
