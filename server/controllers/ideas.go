@@ -7,7 +7,7 @@ package controllers
 //	"github.com/fifciu/what-can-i-do/server/models"
 //	"github.com/gorilla/context"
 //)
-
+//
 //func GetMineIdeas(w http.ResponseWriter, r *http.Request) {
 //	claims := context.Get(r, "CurrentUser").(*models.Claims)
 //	ideas := models.GetUserIdeas(claims.ID, []models.IdeasMapper{models.MapperAddProblemsName})

@@ -12,28 +12,28 @@ import (
 	"github.com/fifciu/what-can-i-do/server/models"
 )
 
-type MockEntity struct {
+type mockEntity struct {
 	UserId uint
 	Name string
 }
 
-type MockEntityWrapper struct {
-	Entity MockEntity
+type mockEntityWrapper struct {
+	Entity mockEntity
 }
 
-func (mockEntity *MockEntity) GetNewInstance() models.DatabaseType {
-	return &MockEntity{}
+func (mck *mockEntity) GetNewInstance() models.DatabaseType {
+	return &mockEntity{}
 }
 
-func (mockEntity *MockEntity) SetUserId(uid uint) {
-	mockEntity.UserId = uid
+func (mck *mockEntity) SetUserId(uid uint) {
+	mck.UserId = uid
 }
 
-func (mockEntity *MockEntity) Validate() error {
+func (mck *mockEntity) Validate() error {
 	return nil
 }
 
-func (mockEntity *MockEntity) Save() error {
+func (mck *mockEntity) Save() error {
 	return nil
 }
 
@@ -56,7 +56,7 @@ func TestAddRecordFactory(t *testing.T) {
 	rr := httptest.NewRecorder()
 	rr2 := httptest.NewRecorder()
 	context.Set(req2, "CurrentUser", &models.Claims{ID: 2})
-	handler := AddRecordFactory(&MockEntity{})
+	handler := AddRecordFactory(&mockEntity{})
 
 	// Act
 	handler.ServeHTTP(rr, req)
@@ -67,7 +67,7 @@ func TestAddRecordFactory(t *testing.T) {
 		t.Errorf("Bad code for empty body, got %v wanted %v", status, http.StatusBadRequest)
 	}
 
-	responseEntity := &MockEntityWrapper{}
+	responseEntity := &mockEntityWrapper{}
 	err = json.NewDecoder(rr2.Body).Decode(responseEntity)
 	if err != nil {
 		t.Errorf(err.Error())

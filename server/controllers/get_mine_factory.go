@@ -10,7 +10,7 @@ import (
 func GetMineFactory(entity models.UserCreatedEntity) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims := context.Get(r, "CurrentUser").(*models.Claims)
-		entities := entity.GetByUserId(claims.ID)
+		entities := entity.GetByUserId(uint(claims.ID))
 		response := u.Status(true)
 		response[entity.PluralName()] = entities
 		u.Respond(w, response)

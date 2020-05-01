@@ -16,6 +16,13 @@ type ClaimsUser struct {
 }
 
 type UserCreatedEntity interface {
-	GetByUserId(userId uint) UserCreatedEntity
+	GetByUserId(userId uint) []UserCreatedEntity
 	PluralName() string
+}
+
+type DatabaseType interface {
+	SetUserId(userId uint)
+	Validate() error
+	Save() error
+	GetNewInstance() DatabaseType
 }

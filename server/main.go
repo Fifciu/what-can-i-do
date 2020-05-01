@@ -16,6 +16,8 @@ import (
 
 func main() {
 
+	// TODO First query after launch does not work. No connection with db?
+
 	pwaProtocol := os.Getenv("pwa_protocol")
 	pwaHost := os.Getenv("pwa_host")
 	pwaPort := os.Getenv("pwa_port")
@@ -56,8 +58,8 @@ func main() {
 	router.Handle("/ideas",
 		middlewares.AuthUser(controllers.AddRecordFactory(&models.Idea{}))).Methods("POST")
 
-	//router.Handle("/ideas/mine",
-	//	middlewares.AuthUser(http.HandlerFunc(controllers.GetMineIdeas))).Methods("POST")
+	router.Handle("/ideas/mine",
+		middlewares.AuthUser(controllers.GetMineFactory(&models.Idea{}))).Methods("POST")
 
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")

@@ -1,3 +1,6 @@
+/*
+	Loool
+ */
 package controllers
 
 import (
@@ -8,6 +11,7 @@ import (
 	"github.com/fifciu/what-can-i-do/server/models"
 )
 
+// AddRecordFactory return a HTTP Handler for adding new record to database as user
 func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		copyEntity := entity.GetNewInstance()

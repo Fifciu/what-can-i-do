@@ -1,7 +1,7 @@
 package models
 
 import (
-	"sort"
+	//"sort"
 	"errors"
 )
 
@@ -58,38 +58,38 @@ func (idea *Idea) Validate() error {
 
 type IdeasMapper func ([]*Idea)
 
-func MapperAddProblemsName (ideas []*Idea) {
-	problemIdsSet := make(map[uint]bool)
-	for _, idea := range ideas {
-		problemIdsSet[idea.ProblemID] = true
-	}
-	problemIds := make([]int, len(problemIdsSet))
-	counter := 0
-	for id, _ := range problemIdsSet {
-		problemIds[counter] = int(id)
-		counter++
-	}
-	sort.Ints(problemIds)
-
-	problems := []*Problem{}
-	GetDB().
-		Table("problems").
-		Select("id, name").
-		Where("id IN (?)", problemIds).
-		Scan(&problems)
-	problemsMap := make(map[uint]*Problem)
-	for _, problem := range problems {
-		problemsMap[problem.ID] = problem
-	}
-	for _, idea := range ideas {
-		if problem, ok := problemsMap[idea.ProblemID]; ok {
-			idea.ProblemName = problem.Name
-		} else {
-			// I SHOULD LOG IT
-			idea.ProblemName = "Not found"
-		}
-	}
-}
+//func MapperAddProblemsName (ideas []*Idea) {
+//	problemIdsSet := make(map[uint]bool)
+//	for _, idea := range ideas {
+//		problemIdsSet[idea.ProblemID] = true
+//	}
+//	problemIds := make([]int, len(problemIdsSet))
+//	counter := 0
+//	for id, _ := range problemIdsSet {
+//		problemIds[counter] = int(id)
+//		counter++
+//	}
+//	sort.Ints(problemIds)
+//
+//	problems := []*Problem{}
+//	GetDB().
+//		Table("problems").
+//		Select("id, name").
+//		Where("id IN (?)", problemIds).
+//		Scan(&problems)
+//	problemsMap := make(map[uint]*Problem)
+//	for _, problem := range problems {
+//		problemsMap[problem.ID] = problem
+//	}
+//	for _, idea := range ideas {
+//		if problem, ok := problemsMap[idea.ProblemID]; ok {
+//			idea.ProblemName = problem.Name
+//		} else {
+//			// I SHOULD LOG IT
+//			idea.ProblemName = "Not found"
+//		}
+//	}
+//}
 
 func GetProblemIdeas(problemId uint) []*Idea {
 	ideas := []*Idea{}
@@ -101,19 +101,20 @@ func GetProblemIdeas(problemId uint) []*Idea {
 	return ideas
 }
 
-func (idea *Idea) GetByUserId(userId uint) []*Idea {
+func (idea *Idea) GetByUserId(userId uint) []UserCreatedEntity {
 	ideas := []*Idea{}
 	GetDB().
 		Table("ideas").
-		Select("problems.name, ideas.id, ideas.problem_id, ideas.action_description, ideas.results_description, ideas.money_price, ideas.time_price, ideas.is_published").
+		Select("problems.name AS problem_name, ideas.id, ideas.problem_id, ideas.action_description, ideas.results_description, ideas.money_price, ideas.time_price, ideas.is_published").
 		Joins("INNER JOIN problems ON ideas.problem_id = problems.id").
-		Where("user_id = ?", userId).
+		Where("ideas.user_id = ?", userId).
 		Scan(&ideas)
 
-	//GetDB().Table("message").Select("message.*, user.name").Joins("INNER JOIN user ON user.id = message.user_id").Scan(&messages)
-
-
-	return ideas
+	uces := make([]UserCreatedEntity, len(ideas))
+	for i, idea := range ideas {
+		uces[i] = idea
+	}
+	return uces
 }
 
 func (idea *Idea) Save() error {

@@ -79,46 +79,46 @@ func TestGetByUserId(t *testing.T) {
 	}
 }
 
-func TestMapperAddProblemsName(t *testing.T) {
-	// Arrange
-	Db, mock, err := sqlmock.New()
-	db, _ = gorm.Open("mysql", Db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-	sqlRows := sqlmock.NewRows([]string{
-		"id",
-		"name",
-	}).
-		AddRow(1, "Coronavirus").
-		AddRow(2, "Pollution")
-	mock.ExpectQuery("^SELECT (.+) FROM `problems` (.+) \\(id IN \\(\\?,\\?,\\?\\)(.+)").WithArgs(uint(1), uint(2), uint(4)).WillReturnRows(sqlRows)
-	ideas := []*Idea{
-		{
-			ProblemID: uint(1),
-		},
-		{
-			ProblemID: uint(2),
-		},
-		{
-			ProblemID: uint(4),
-		},
-	}
-
-	// Act
-	MapperAddProblemsName(ideas)
-
-	// Assert
-	for _, idea := range ideas {
-		if (idea.ProblemID == 1 && idea.ProblemName != "Coronavirus") || (idea.ProblemID == 2 && idea.ProblemName != "Pollution") {
-			t.Errorf("It fetches ideas with bad Problem ID")
-		}
-		if (idea.ProblemID == 4 && idea.ProblemName != "Not found") {
-			t.Errorf("It does not use fallback value for ProductName")
-		}
-	}
-}
+//func TestMapperAddProblemsName(t *testing.T) {
+//	// Arrange
+//	Db, mock, err := sqlmock.New()
+//	db, _ = gorm.Open("mysql", Db)
+//	if err != nil {
+//		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+//	}
+//	defer db.Close()
+//	sqlRows := sqlmock.NewRows([]string{
+//		"id",
+//		"name",
+//	}).
+//		AddRow(1, "Coronavirus").
+//		AddRow(2, "Pollution")
+//	mock.ExpectQuery("^SELECT (.+) FROM `problems` (.+) \\(id IN \\(\\?,\\?,\\?\\)(.+)").WithArgs(uint(1), uint(2), uint(4)).WillReturnRows(sqlRows)
+//	ideas := []*Idea{
+//		{
+//			ProblemID: uint(1),
+//		},
+//		{
+//			ProblemID: uint(2),
+//		},
+//		{
+//			ProblemID: uint(4),
+//		},
+//	}
+//
+//	// Act
+//	MapperAddProblemsName(ideas)
+//
+//	// Assert
+//	for _, idea := range ideas {
+//		if (idea.ProblemID == 1 && idea.ProblemName != "Coronavirus") || (idea.ProblemID == 2 && idea.ProblemName != "Pollution") {
+//			t.Errorf("It fetches ideas with bad Problem ID")
+//		}
+//		if (idea.ProblemID == 4 && idea.ProblemName != "Not found") {
+//			t.Errorf("It does not use fallback value for ProductName")
+//		}
+//	}
+//}
 
 func TestSaveIdea(t *testing.T) {
 	// Arrange
