@@ -31,23 +31,17 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/",
-		controllers.HelloWorld).Methods("GET")
-
-	router.Handle("/protected",
-		middlewares.AuthUser(http.HandlerFunc(controllers.HelloWorld))).Methods("GET")
-
 	router.HandleFunc("/problems",
 		controllers.GetProblemsByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
 
-	router.HandleFunc("/problems",
-		controllers.GetProblems).Methods("GET")
+	//router.HandleFunc("/problems",
+	//	controllers.GetProblems).Methods("GET")
 
 	router.Handle("/problems/mine",
 		middlewares.AuthUser(controllers.GetMineFactory(&models.Problem{}))).Methods("POST")
 
-	router.HandleFunc("/problems/{problemSlug}",
-		controllers.GetCertainProblem).Methods("GET")
+	//router.HandleFunc("/problems/{problemSlug}",
+	//	controllers.GetCertainProblem).Methods("GET")
 
 	router.Handle("/problems/{problemSlug}/ideas",
 			http.HandlerFunc(controllers.GetCertainProblemWithIdeas)).Methods("GET")
