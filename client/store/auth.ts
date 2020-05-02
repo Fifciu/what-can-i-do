@@ -70,6 +70,7 @@ export const actions: ActionTree<AuthState, RootState> = {
       commit('SET_USERDATA', { email, name: fullname })
       return true
     } catch (err) {
+      console.log(err)
       if (err.response.status == 401) {
         // Try to refresh
         return await dispatch('refresh', { token })

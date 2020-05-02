@@ -1,6 +1,12 @@
 <template>
     <a-layout id="components-layout-demo-top" class="layout">
       <a-layout-header>
+        <div class="logo">
+          <nuxt-link to="/">Whatcanido</nuxt-link>
+        </div>
+        <div class="logo logo--mobile">
+          <nuxt-link to="/">WCID</nuxt-link>
+        </div>
         <a-menu
           theme="dark"
           mode="horizontal"
@@ -90,10 +96,6 @@
 
           menuItems () {
               const items = [
-                  {
-                      name: 'Home',
-                      path: '/'
-                  },
                   {
                       name: 'About',
                       path: '/about'
@@ -202,13 +204,47 @@
 
   .ant-menu-item {
     padding: 0 10px;
-    @media screen and (min-width: 340px) {
+    @media screen and (min-width: 600px) {
       padding: 0 15px;
     }
   }
 
   .clickable {
     cursor: pointer;
+  }
+
+  #components-layout-demo-top .logo {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: 'Ubuntu', sans-serif;
+    border-radius: 15px;
+    margin: 16px 4px 16px 14px;
+    font-size: 1.2em;
+
+    a {
+      color: #f0f0f0;
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    &--mobile {
+      width: 65px;
+      display: flex;
+    }
+
+    @media screen and (min-width: 500px) {
+      display: flex;
+      &--mobile {
+        display: none;
+      }
+    }
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
 </style>

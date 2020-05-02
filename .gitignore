@@ -9,4 +9,4 @@ yarn-error.log
 .env
 test
 jwt-go
-go-sqlmock/
+go-sqlmock

@@ -16,5 +16,6 @@ const authMiddleware: Middleware = async ({ store, redirect }) => {
   }
 }
 
+// TODO Only MyAccount tries to refresh token, apply it everywhere
 
 export default authMiddleware
