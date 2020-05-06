@@ -1,38 +1,68 @@
 # What can I do?
 World's issues solutions ranking
 
+## Frontend
+- [ ] Static generated nuxt app, I have to rewrite this to use localStorage instead of Cookies
+- [ ] Pagespeed 90+
+- [ ] CDN
+
 ## Main Page
-Header: "What can I do with:"
-Most popular problems rank - Top 10
+- [x] Header: "What can I do with:"
+- [x] Search field
+- [ ] Most popular problems rank - Top 10 (After MVP)
 
 ## Problem View Page
 Header: "Coronavirus" 
 - Remove btn only for me
 - Ideas ranking
-@click element it opens idea:
+- [x] Show problem's name and description
+- [x] Show ideas
+- [ ] Sort ideas by ratings
+- [x] Possible to add an idea
+- [ ] Possible to rate idea +/-
 Idea:
-- Expandable
-- Short description
-- Detailed description
-- Source/s
-- Vote up
-- Vote down
-- Comments
-- Is accepted (only for me)
-- Remove btn (only for me)
-- Average price
+- [x] What can I do?
+- [x] Effects
+- [ ] Source/s
+- [ ] Vote up
+- [ ] Vote down
+- [x] Average money price
+- [x] Average time price
 
-Add new idea btn
-Adding an idea:
-- Short desc
-- Detailed desc
+- [ ] MODERATOR: Tab with not accepted ideas
+- [ ] MODERATOR: Tab with not accepted problems
 
-## Add Problem Modal from top right corner btn
-Header: "Add problem"
-Problem name
-Problem description
+- [x] Possible to add a problem
 
 ## Login page - just login & password
 ## Dashboard
-- [ ] Problems waiting for review
-- [ ] Ideas waiting for review
+- [x] Problems waiting for review
+- [x] Ideas waiting for review
+
+- [ ] About page with big explaination
+- [ ] Take care of SEO Stuff
+- [ ] Take care of Lighthouse audits
+
+## Backend
+- [ ] Varnish cache in front of API
+- [ ] Autoinvalidating by tags in Varnish
+- [ ] Vote actions support
+- [ ] Moderator's actions support
+
+## Analytic
+- [ ] Attach simple google analytics to know what happens there
+
+# Deploy
+- [ ] FINALLY!
+
+## Promotion
+- [ ] Medium article
+- [ ] Vue discord channel
+- [ ] Facebook programmist groups
+- [ ] #LECIMY group
+- [ ] Linkedin post
+
+## Safety before further developing
+- [ ] Unit tests for Backend
+- [ ] E2E for Frontend
+- [ ] Unit tests for Frontend
