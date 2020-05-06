@@ -22,7 +22,15 @@ func getProblem(w http.ResponseWriter, r *http.Request, withIdeas bool) {
 		return
 	}
 
-	problem := models.GetProblem(problemSlug, withIdeas)
+	claims := context.Get(r, "CurrentUser")
+	userId := uint(0)
+
+	if claims != nil {
+		claims := context.Get(r, "CurrentUser").(*models.Claims)
+		userId = claims.ID
+	}
+
+	problem := models.GetProblem(problemSlug, withIdeas, userId)
 	if problem.ID == 0 {
 		response = u.Message(false, "Problem does not exist")
 		u.RespondWithCode(w, response, http.StatusNotFound)

@@ -8,7 +8,8 @@ import (
 type Idea struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	ProblemID   uint    `json:"problem_id"`
-	Name string `json:"name" gorm:"-" `
+	Score int `json:"score" gorm:"-" `
+	MyVote int `json:"my_vote" gorm:"-" `
 	ProblemName string `json:"problem_name" gorm:"-" `
 	UserID   uint    `json:"user_id"`
 	AuthorName string `gorm:"-" json:"author_name"`

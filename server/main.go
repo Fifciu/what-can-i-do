@@ -44,7 +44,7 @@ func main() {
 	//	controllers.GetCertainProblem).Methods("GET")
 
 	router.Handle("/problems/{problemSlug}/ideas",
-			http.HandlerFunc(controllers.GetCertainProblemWithIdeas)).Methods("GET")
+			middlewares.MightBeAuthUser(http.HandlerFunc(controllers.GetCertainProblemWithIdeas))).Methods("GET")
 
 	router.Handle("/problems",
 		middlewares.AuthUser(http.HandlerFunc(controllers.AddProblem))).Methods("POST")

@@ -43,7 +43,7 @@ func (problem *Problem) GetByUserId(userId uint) []UserCreatedEntity {
 	return uces
 }
 
-func GetProblem(problemSlug string, withIdeas bool) *Problem {
+func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 	problem := &Problem{}
 
 	GetDB().Table("problems").Select("*").Where("slug = ? AND is_published = 1", problemSlug).First(problem)
@@ -51,12 +51,25 @@ func GetProblem(problemSlug string, withIdeas bool) *Problem {
 	if withIdeas {
 		problemId := problem.ID
 		ideas := []*Idea{}
-		GetDB().
-			Table("ideas").
-			Select("ideas.*, users.fullname as author_name").
-			Joins("INNER JOIN users ON ideas.user_id = users.id").
-			Where("problem_id = ? AND is_published = 1", problemId).
-			Scan(&ideas)
+		if userId > 0 {
+			GetDB().
+				Table("ideas").
+				Select("SUM(myVotes.delta) as my_vote, SUM(votes.delta) as score, ideas.*, users.fullname as author_name").
+				Joins("INNER JOIN users ON ideas.user_id = users.id").
+				Joins("INNER JOIN votes ON ideas.id = votes.idea_id").
+				Joins("INNER JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = ?", userId).
+				Where("problem_id = ? AND is_published = 1", problemId).
+				Scan(&ideas)
+		} else {
+			GetDB().
+				Table("ideas").
+				Select("SUM(votes.delta) as score, ideas.*, users.fullname as author_name").
+				Joins("INNER JOIN users ON ideas.user_id = users.id").
+				Joins("INNER JOIN votes ON ideas.id = votes.idea_id").
+				Where("problem_id = ? AND is_published = 1", problemId).
+				Scan(&ideas)
+		}
+
 		problem.Ideas = ideas
 	}
 
