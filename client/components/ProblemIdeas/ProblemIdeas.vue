@@ -7,29 +7,25 @@
   >
     <a-list-item slot="renderItem" slot-scope="item, index">
       <a-comment author="Han Solo">
-        <!--            <template slot="actions">-->
-        <!--              <span key="comment-basic-like">-->
-        <!--                <a-tooltip title="Like">-->
-        <!--                  <a-icon type="like" :theme="action === 'liked' ? 'filled' : 'outlined'" @click="like" />-->
-        <!--                </a-tooltip>-->
-        <!--                <span style="padding-left: '8px';cursor: 'auto'">-->
-        <!--                  {{likes}}-->
-        <!--                </span>-->
-        <!--              </span>-->
-        <!--                      <span key="comment-basic-dislike">-->
-        <!--                <a-tooltip title="Dislike">-->
-        <!--                  <a-icon-->
-        <!--                    type="dislike"-->
-        <!--                    :theme="action === 'disliked' ? 'filled' : 'outlined'"-->
-        <!--                    @click="dislike"-->
-        <!--                  />-->
-        <!--                </a-tooltip>-->
-        <!--                <span style="padding-left: '8px';cursor: 'auto'">-->
-        <!--                  {{dislikes}}-->
-        <!--                </span>-->
-        <!--              </span>-->
-        <!--              <span key="comment-basic-reply-to">Fake news</span>-->
-        <!--            </template>-->
+        <template slot="actions">
+          <span key="comment-basic-like">
+            <a-tooltip title="Like">
+              <a-icon type="like" :theme="action === 'liked' ? 'filled' : 'outlined'" @click="like" />
+            </a-tooltip>
+          </span>
+          <span style="padding: 0 18px 0 8px; cursor: auto">
+            2
+          </span>
+          <span key="comment-basic-dislike">
+            <a-tooltip title="Dislike">
+              <a-icon
+                type="dislike"
+                :theme="action === 'disliked' ? 'filled' : 'outlined'"
+                @click="dislike"
+              />
+            </a-tooltip>
+          </span>
+        </template>
         <div slot="content">
           <h5>What can I do?</h5>
           <p>{{item.action_description}}</p>
@@ -38,7 +34,12 @@
           <h5>Budget</h5>
           <p>${{item.money_price}}</p>
           <h5>Needed time</h5>
-          <p>{{item.time_price}} minute{{item.time_price != 1 ? 's' : ''}}</p>
+          <p>
+            <template v-if="item.time_price == -1">As much as possible</template>
+            <template v-else>
+              {{item.time_price}} minute{{item.time_price != 1 ? 's' : ''}}
+            </template>
+          </p>
         </div>
         <a-tooltip slot="datetime">
           <span>{{item.datetime}}</span>
