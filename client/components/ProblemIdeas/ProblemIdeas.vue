@@ -10,17 +10,17 @@
         <template slot="actions">
           <span key="comment-basic-like">
             <a-tooltip title="Like">
-              <a-icon type="like" :theme="action === 'liked' ? 'filled' : 'outlined'" @click="like" />
+              <a-icon type="like" :theme="item.my_vote == 1 ? 'filled' : 'outlined'" @click="like" />
             </a-tooltip>
           </span>
           <span style="padding: 0 18px 0 8px; cursor: auto">
-            2
+            {{ item.score }}
           </span>
           <span key="comment-basic-dislike">
             <a-tooltip title="Dislike">
               <a-icon
                 type="dislike"
-                :theme="action === 'disliked' ? 'filled' : 'outlined'"
+                :theme="item.my_vote == -1 ? 'filled' : 'outlined'"
                 @click="dislike"
               />
             </a-tooltip>
