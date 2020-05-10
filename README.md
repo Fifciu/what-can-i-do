@@ -48,12 +48,17 @@ Idea:
 - [ ] Autoinvalidating by tags in Varnish
 - [ ] Vote actions support
 - [ ] Moderator's actions support
+- [ ] Disable cors on dev & prod https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
 
 ## Analytic
 - [ ] Attach simple google analytics to know what happens there
 
 # Deploy
 - [ ] FINALLY!
+
+- [ ] Prepare content
+- [ ] 10 Problems
+- [ ] 3 x 10 Ideas
 
 ## Promotion
 - [ ] Medium article
