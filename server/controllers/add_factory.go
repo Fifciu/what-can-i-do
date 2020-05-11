@@ -20,7 +20,7 @@ func AddRecordFactory(entity models.DatabaseType) http.HandlerFunc {
 
 		// No input
 		if err != nil {
-			response = u.Message(false, err.Error())
+			response = u.Message(false, "Bad request")
 			u.RespondWithCode(w, response, http.StatusBadRequest)
 			return
 		}

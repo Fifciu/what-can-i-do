@@ -33,6 +33,17 @@ func GetUserById(userId uint) *User {
 	return user
 }
 
+func UserExists (userId uint) bool {
+	user := &User{}
+
+	GetDB().Table("users").Select("id").Where("id = ?", userId).First(user)
+
+	if user.ID > 0 {
+		return true
+	}
+	return false
+}
+
 func (user *User) CreateOrGet(email string, fullname string, provider string) (*User, error) {
 	existingUser := &User{}
 	GetDB().Table("users").Select("*").Where("email = ?", email).First(existingUser)

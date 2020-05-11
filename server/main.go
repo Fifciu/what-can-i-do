@@ -31,33 +31,45 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// Home's view - Search query
 	router.HandleFunc("/problems",
 		controllers.GetProblemsByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
 
 	//router.HandleFunc("/problems",
 	//	controllers.GetProblems).Methods("GET")
 
+	// Account's view
 	router.Handle("/problems/mine",
 		middlewares.AuthUser(controllers.GetMineFactory(&models.Problem{}))).Methods("POST")
 
 	//router.HandleFunc("/problems/{problemSlug}",
 	//	controllers.GetCertainProblem).Methods("GET")
 
+	// Problem's view
 	router.Handle("/problems/{problemSlug}/ideas",
 			middlewares.MightBeAuthUser(http.HandlerFunc(controllers.GetCertainProblemWithIdeas))).Methods("GET")
 
+	// Home's view - Add new problem
 	router.Handle("/problems",
 		middlewares.AuthUser(http.HandlerFunc(controllers.AddProblem))).Methods("POST")
 
+	// Problem's view - Add new idea
 	router.Handle("/ideas",
 		middlewares.AuthUser(controllers.AddRecordFactory(&models.Idea{}))).Methods("POST")
 
+	// Problem's view - Add vote up/down
+	router.Handle("/vote",
+		middlewares.AuthUser(controllers.AddRecordFactory(&models.Vote{}))).Methods("POST")
+
+	// Account's view - My ideas
 	router.Handle("/ideas/mine",
 		middlewares.AuthUser(controllers.GetMineFactory(&models.Idea{}))).Methods("POST")
 
+	// Sign in/up's view - Init auth and get redirect link
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")
 
+	// After redirection's view -
 	router.HandleFunc("/auth/complete/{provider}",
 		controllers.CompleteAuth).Methods("POST")
 

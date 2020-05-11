@@ -102,6 +102,17 @@ func GetProblemIdeas(problemId uint) []*Idea {
 	return ideas
 }
 
+func IdeaExistsAndPublished(ideaId uint) bool {
+	idea := &Idea{}
+
+	GetDB().Table("ideas").Select("id").Where("id = ? AND is_published = 1", ideaId).First(idea)
+
+	if idea.ID > 0 {
+		return true
+	}
+	return false
+}
+
 func (idea *Idea) GetByUserId(userId uint) []UserCreatedEntity {
 	ideas := []*Idea{}
 	GetDB().
