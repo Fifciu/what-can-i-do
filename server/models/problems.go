@@ -11,6 +11,7 @@ type Problem struct {
 	Slug string `json:"slug"`
 	Description   string    `json:"description"`
 	IsPublished bool `json:"is_published"`
+	Views uint `json:"views"`
 	Ideas []*Idea `json:"ideas" gorm:"foreignkey:ProblemID"`
 }
 
@@ -43,6 +44,7 @@ func (problem *Problem) GetByUserId(userId uint) []UserCreatedEntity {
 	return uces
 }
 
+// UserID to fetch votes if user's voted
 func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 	problem := &Problem{}
 
@@ -71,6 +73,11 @@ func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 		}
 
 		problem.Ideas = ideas
+
+		// Add a view
+		if problem.ID > 0 {
+			GetDB().Model(&problem).Update("views", problem.Views + 1)
+		}
 	}
 
 	return problem
