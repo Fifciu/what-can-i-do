@@ -52,32 +52,39 @@ func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 
 	if withIdeas {
 		problemId := problem.ID
-		ideas := []*Idea{}
-		if userId > 0 {
-			GetDB().
-				Table("ideas").
-				Select("SUM(myVotes.delta) as my_vote, SUM(votes.delta) as score, ideas.*, users.fullname as author_name").
-				Joins("INNER JOIN users ON ideas.user_id = users.id").
-				Joins("INNER JOIN votes ON ideas.id = votes.idea_id").
-				Joins("INNER JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = ?", userId).
-				Where("problem_id = ? AND is_published = 1", problemId).
-				Scan(&ideas)
-		} else {
-			GetDB().
-				Table("ideas").
-				Select("SUM(votes.delta) as score, ideas.*, users.fullname as author_name").
-				Joins("INNER JOIN users ON ideas.user_id = users.id").
-				Joins("INNER JOIN votes ON ideas.id = votes.idea_id").
-				Where("problem_id = ? AND is_published = 1", problemId).
-				Scan(&ideas)
-		}
-
-		problem.Ideas = ideas
-
 		// Add a view
 		if problem.ID > 0 {
 			GetDB().Model(&problem).Update("views", problem.Views + 1)
 		}
+
+		ideas := []*Idea{}
+		if userId > 0 {
+			//SELECT IFNULL(myVotes.delta,25) as my_vote, IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name
+			//FROM ideas
+			//INNER JOIN users ON ideas.user_id = users.id
+			//JOIN votes allVotes ON ideas.id = allVotes.idea_id
+			//JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = 1
+			//WHERE ideas.problem_id = 7 AND ideas.is_published = 1
+
+			GetDB().
+				Table("ideas").
+				Select("IFNULL(myVotes.delta,25) as my_vote, IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name").
+				Joins("INNER JOIN users ON ideas.user_id = users.id").
+				Joins("JOIN votes allVotes ON ideas.id = allVotes.idea_id").
+				Joins("JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = ?", userId).
+				Where("ideas.problem_id = ? AND ideas.is_published = 1", problemId).
+				Scan(&ideas)
+		} else {
+			GetDB().
+				Table("ideas").
+				Select("IFNULL(SUM(votes.delta),0) as score, ideas.*, users.fullname as author_name").
+				Joins("INNER JOIN users ON ideas.user_id = users.id").
+				Joins("LEFT JOIN votes ON ideas.id = votes.idea_id").
+				Where("problem_id = ? AND is_published = 1", problemId).
+				Group("id").
+				Scan(&ideas)
+		}
+		problem.Ideas = ideas
 	}
 
 	return problem

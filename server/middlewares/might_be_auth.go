@@ -24,6 +24,7 @@ func MightBeAuthUser(next http.Handler) http.Handler {
 			return jwtKey, nil
 		})
 
+
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
 				next.ServeHTTP(w, r)
@@ -38,6 +39,7 @@ func MightBeAuthUser(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+
 		if !tkn.Valid {
 			next.ServeHTTP(w, r)
 			return
