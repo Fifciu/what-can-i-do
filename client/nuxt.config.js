@@ -62,8 +62,17 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
+    '@nuxtjs/proxy'
   ],
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8090',
+      pathRewrite: {
+        '^/api' : '/'
+      }
+    }
+  },
   styleResources: {
     scss: [
       '~/assets/scss/variables.scss',
@@ -74,7 +83,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.use_varnish === '1' ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.api_port}/`
+    baseURL: process.env.use_varnish === '1' ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.pwa_port}/api/`
   },
   /*
   ** Build configuration

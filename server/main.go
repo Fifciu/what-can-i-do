@@ -10,7 +10,6 @@ import (
 	middlewares "github.com/fifciu/what-can-i-do/server/middlewares"
 	u "github.com/fifciu/what-can-i-do/server/utils"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -86,11 +85,8 @@ func main() {
 
 	fmt.Println("It works on http://localhost:" + port + "/ address")
 
-	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
-	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	allowedMethods := handlers.AllowedMethods([]string{"POST", "GET"})
-
-	err := http.ListenAndServe(":"+port, handlers.CORS(allowedOrigins, allowedMethods, allowedHeaders)(router))
+	// TODO Prepare nginx configuration for same domain api & pwa
+	err := http.ListenAndServe(":"+port, router)
 	if err != nil {
 		fmt.Print(err)
 	}

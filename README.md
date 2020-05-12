@@ -46,7 +46,7 @@ Idea:
 ## Backend
 - [ ] Varnish cache in front of API
 - [ ] Autoinvalidating by tags in Varnish
-- [ ] Vote actions support
+- [x] Vote actions support
 - [ ] Moderator's actions support
 - [ ] Disable cors on dev & prod https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
 
