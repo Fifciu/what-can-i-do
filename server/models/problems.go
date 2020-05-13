@@ -107,6 +107,13 @@ func ProblemExists(problemId uint) bool {
 	return false
 }
 
+func GetMostPopular() []*Problem {
+	problems := []*Problem{}
+
+	GetDB().Table("problems").Select("*").Where("is_published = 1").Order("views desc").Limit(10).Scan(&problems)
+	return problems
+}
+
 func (problem *Problem) Save(userId uint, name string, description string) bool {
 	// TODO Max requests per time for user
 	existingUnpublishedProblem := &Problem{}

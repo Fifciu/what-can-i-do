@@ -48,7 +48,8 @@ Idea:
 - [ ] Autoinvalidating by tags in Varnish
 - [x] Vote actions support
 - [ ] Moderator's actions support
-- [ ] Disable cors on dev & prod https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
+- [x] Disable cors on dev https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
+- [ ] Disable cors on prod https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
 
 ## Analytic
 - [ ] Attach simple google analytics to know what happens there

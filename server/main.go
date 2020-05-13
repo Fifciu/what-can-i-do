@@ -34,6 +34,10 @@ func main() {
 	router.HandleFunc("/problems",
 		controllers.GetProblemsByQuery).Methods("GET").Queries("searchQuery", "{searchQuery}")
 
+	// Home's view - Hot
+	router.HandleFunc("/problems/hot",
+		controllers.GetMostPopularProblems).Methods("GET")
+
 	//router.HandleFunc("/problems",
 	//	controllers.GetProblems).Methods("GET")
 
@@ -92,3 +96,4 @@ func main() {
 	}
 
 }
+
