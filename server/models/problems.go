@@ -59,21 +59,42 @@ func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 
 		ideas := []*Idea{}
 		if userId > 0 {
-			//SELECT IFNULL(myVotes.delta,25) as my_vote, IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name
+			//SELECT IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name
 			//FROM ideas
 			//INNER JOIN users ON ideas.user_id = users.id
 			//JOIN votes allVotes ON ideas.id = allVotes.idea_id
-			//JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = 1
 			//WHERE ideas.problem_id = 7 AND ideas.is_published = 1
-
+			//GROUP BY ideas.id;
 			GetDB().
 				Table("ideas").
-				Select("IFNULL(myVotes.delta,25) as my_vote, IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name").
+				Select("IFNULL(SUM(allVotes.delta),0) as score, ideas.*, users.fullname as author_name").
 				Joins("INNER JOIN users ON ideas.user_id = users.id").
 				Joins("JOIN votes allVotes ON ideas.id = allVotes.idea_id").
-				Joins("JOIN votes myVotes ON ideas.id = myVotes.idea_id AND myVotes.user_id = ?", userId).
 				Where("ideas.problem_id = ? AND ideas.is_published = 1", problemId).
+				Group("ideas.id").
 				Scan(&ideas)
+
+			ideasIds := make([]uint, len(ideas))
+			for i, idea := range ideas {
+				ideasIds[i] = idea.ID
+			}
+
+			votes := []*Vote{}
+			GetDB().
+				Table("votes").
+				Select("idea_id, delta").
+				Where("idea_id IN(?) AND user_id = ?", ideasIds, userId).
+				Scan(&votes)
+
+			for i, idea := range ideas {
+				for _, vote := range votes {
+					if vote.IdeaID == idea.ID {
+						ideas[i].MyVote = vote.Delta
+						break
+					}
+				}
+			}
+
 		} else {
 			GetDB().
 				Table("ideas").
@@ -82,6 +103,7 @@ func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 				Joins("LEFT JOIN votes ON ideas.id = votes.idea_id").
 				Where("problem_id = ? AND is_published = 1", problemId).
 				Group("id").
+				Order("score desc").
 				Scan(&ideas)
 		}
 		problem.Ideas = ideas
