@@ -44,6 +44,7 @@ Idea:
 - [ ] Take care of Lighthouse audits
 
 ## Backend
+- [ ] Safety condition for token without "Bearer" phrase
 - [ ] Varnish cache in front of API
 - [ ] Autoinvalidating by tags in Varnish
 - [x] Vote actions support
