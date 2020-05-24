@@ -72,6 +72,7 @@ func GetProblem(problemSlug string, withIdeas bool, userId uint) *Problem {
 				Joins("JOIN votes allVotes ON ideas.id = allVotes.idea_id").
 				Where("ideas.problem_id = ? AND ideas.is_published = 1", problemId).
 				Group("ideas.id").
+				Order("score desc").
 				Scan(&ideas)
 
 			ideasIds := make([]uint, len(ideas))

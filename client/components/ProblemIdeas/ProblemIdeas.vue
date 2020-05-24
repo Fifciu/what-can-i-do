@@ -36,9 +36,7 @@
           <h5>Needed time</h5>
           <p>
             <template v-if="item.time_price == -1">As much as possible</template>
-            <template v-else>
-              {{item.time_price}} minute{{item.time_price != 1 ? 's' : ''}}
-            </template>
+            <template v-else>{{item.time_price}} minute{{item.time_price != 1 ? 's' : ''}}</template>
           </p>
         </div>
         <a-tooltip slot="datetime">
