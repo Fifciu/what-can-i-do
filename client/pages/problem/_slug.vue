@@ -10,7 +10,7 @@
 
     <div class="problem__ideas">
       <h2 class="problem__section-heading">Ideas</h2>
-      <ProblemIdeas
+      <ProblemIdeasWrapper
         v-if="problem.ideas && !!problem.ideas.length"
         :ideas="problem.ideas"
       />
@@ -56,7 +56,7 @@
     export default {
         name: "ProblemView",
         components: {
-            ProblemIdeas: () => import('~/components/ProblemIdeas/ProblemIdeas.vue'),
+            ProblemIdeasWrapper: () => import('~/components/ProblemIdeasWrapper/ProblemIdeasWrapper.vue'),
             AddIdea: () => import('~/components/AddIdea/AddIdea.vue'),
         },
         data () {
