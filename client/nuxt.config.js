@@ -1,7 +1,7 @@
 require('dotenv').config({path: '../server/.env'})
 
 export default {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */

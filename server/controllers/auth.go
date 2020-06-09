@@ -53,6 +53,7 @@ func generateJwt (claimsUser *models.ClaimsUser) (string, time.Time, error) {
 		ID: claimsUser.ID,
 		Fullname: claimsUser.Fullname,
 		Email: claimsUser.Email,
+		Flags: claimsUser.Flags,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -153,6 +154,7 @@ func CompleteAuth(w http.ResponseWriter, r *http.Request) {
 		ID: newUser.ID,
 		Fullname: newUser.Fullname,
 		Email: newUser.Email,
+		Flags: newUser.Flags,
 	}
 	// Create the JWT string
 	tokenString, expirationTime, err := generateJwt(claimsUser)
@@ -192,6 +194,7 @@ func RefreshToken (w http.ResponseWriter, r *http.Request) {
 		ID: claims.ID,
 		Fullname: claims.Fullname,
 		Email: claims.Email,
+		Flags: claims.Flags,
 	}
 	// Create the JWT string
 	tokenString, expirationTime, err := generateJwt(claimsUser)

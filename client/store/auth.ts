@@ -2,9 +2,14 @@ import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import { RootState } from '~/store'
 import Cookie from 'js-cookie'
 
+const FLAGS = {
+  MODERATOR: 1<<0
+}
+
 export const state = () => ({
   token: '',
   expiresAt: '',
+  flags: 0,
   user: {
     email: '',
     name: ''
@@ -15,13 +20,23 @@ export type AuthState = ReturnType<typeof state>
 
 export const getters: GetterTree<AuthState, RootState> = {
   isLoggedIn: state => !!state.token,
-  token: state => state.token
+  token: state => state.token,
+  isModerator: (state): Boolean => !!(state.flags & FLAGS.MODERATOR)
 }
 
 export const mutations: MutationTree<AuthState> = {
   SET_CREDENTIALS: (state, { token, expiresAt }) => {
     state.token = token
     state.expiresAt = expiresAt
+  },
+  SET_FLAGS: (state, { token }) => {
+    try {
+      const tokenParts = token.split('.')
+      const userObject = JSON.parse(window.atob(tokenParts[1]))
+      state.flags = userObject.flags
+    } catch (err) {
+      console.log("Couldn't set flags from token. Bad token! ", err)
+    }
   },
   SET_USERDATA: (state, { email, name }) => {
     state.user.email = email
@@ -33,6 +48,7 @@ export const actions: ActionTree<AuthState, RootState> = {
 
   setCredentials({ commit }, { token, expiresAt}) {
     commit('SET_CREDENTIALS', { token, expiresAt })
+    commit('SET_FLAGS', { token })
   },
 
   setUserdata({ commit }, { email, name }) {
