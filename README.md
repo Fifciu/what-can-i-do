@@ -68,6 +68,7 @@ Idea:
 - [ ] Facebook programmist groups
 - [ ] #LECIMY group
 - [ ] Linkedin post
+- [ ] Facebook feed graphic template for scrollers!!
 
 ## Safety before further developing
 - [ ] Unit tests for Backend
