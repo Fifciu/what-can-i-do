@@ -56,11 +56,6 @@
 
 <script>
   export default {
-      data () {
-          return {
-              refreshTimeout: null
-          }
-      },
       computed: {
           isLoggedIn () {
               return this.$store.getters['auth/isLoggedIn']
@@ -110,7 +105,12 @@
                       },
                       {
                           name: 'Logout',
-                          action: this.logout
+                          action: () => {
+                              this.$store.dispatch('auth/logout')
+                              if (this.$route.name == 'account') {
+                                  this.$router.push('/')
+                              }
+                          }
                       }
                   )
               } else {
