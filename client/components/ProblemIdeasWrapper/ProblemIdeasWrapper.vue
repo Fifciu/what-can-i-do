@@ -1,5 +1,5 @@
 <template>
-  <a-tabs default-active-key="2" v-if="isModerator">
+  <a-tabs default-active-key="1" v-if="isModerator">
     <a-tab-pane key="1">
       <span slot="tab">
         <a-icon type="apple" />
@@ -15,6 +15,7 @@
       <ProblemIdeas :ideas="ideas" moderable/>
     </a-tab-pane>
   </a-tabs>
+  <ProblemIdeas :ideas="ideas" v-else />
 </template>
 
 <script>

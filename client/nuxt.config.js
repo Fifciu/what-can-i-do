@@ -19,7 +19,7 @@ export default {
   },
 
   router: {
-    middleware: ['loginIfPossible']
+    middleware: 'loginIfPossible'
   },
 
   server: {

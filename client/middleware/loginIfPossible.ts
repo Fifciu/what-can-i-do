@@ -1,6 +1,6 @@
 import { Middleware } from '@nuxt/types'
 
-const loginIfPossibleMiddleware: Middleware = async ({ store, redirect }) => {
+const loginIfPossibleMiddleware: Middleware = async ({ store }) => {
   let token = store.state.auth.token
   let expiresAt = store.state.auth.expiresAt
 
