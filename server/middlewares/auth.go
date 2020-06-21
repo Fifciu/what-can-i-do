@@ -22,6 +22,10 @@ func AuthUser(next http.Handler) http.Handler {
 		}
 
 		splitedHeader := strings.Split(authHeader, " ")
+		if len(splitedHeader) < 2 {
+			u.RespondWithCode(w, map[string]interface{}{"status": false}, http.StatusBadRequest)
+			return
+		}
 		token := strings.Trim(splitedHeader[1], " ")
 
 		claims := &models.Claims{}

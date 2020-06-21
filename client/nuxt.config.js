@@ -18,6 +18,10 @@ export default {
     ]
   },
 
+  router: {
+    middleware: ['loginIfPossible']
+  },
+
   server: {
     port: process.env.pwa_port,
     host: process.env.pwa_host

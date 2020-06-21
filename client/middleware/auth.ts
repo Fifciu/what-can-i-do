@@ -1,14 +1,26 @@
 import { Middleware } from '@nuxt/types'
 
-const authMiddleware: Middleware = async ({ store, redirect }) => {
-  if (!store.state.auth.token) {
-    return redirect('/sign-in')
+const authMiddleware: Middleware = async ({ store, redirect, isServer }) => {
+  let token = store.state.auth.token
+  let expiresAt = store.state.auth.expiresAt
+
+  if (!store.state.auth.token || !store.state.auth.expiresAt) {
+    token = window.localStorage.getItem(<string>process.env.ls_token_key)
+    expiresAt = window.localStorage.getItem(<string>process.env.ls_expires_key)
+    await store.dispatch('auth/setCredentials', {
+      token,
+      expiresAt
+    })
+
+    if (!token) {
+      return redirect('/sign-in')
+    }
   }
 
   if (!store.state.auth.user.email || !store.state.auth.user.name) {
     // request to post /me
     const success = await store.dispatch('auth/fetchAndSetUserdata', {
-      token: store.state.auth.token
+      token
     })
     if (!success) {
       return redirect('/logout')

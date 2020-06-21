@@ -1,6 +1,5 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import { RootState } from '~/store'
-import Cookie from 'js-cookie'
 
 const FLAGS = {
   MODERATOR: 1<<0
@@ -9,6 +8,7 @@ const FLAGS = {
 export const state = () => ({
   token: '',
   expiresAt: '',
+  refreshTokenInterval: 0,
   flags: 0,
   user: {
     email: '',
@@ -41,38 +41,67 @@ export const mutations: MutationTree<AuthState> = {
   SET_USERDATA: (state, { email, name }) => {
     state.user.email = email
     state.user.name = name
+  },
+  SET_REFRESH_INTERVAL: (state, timeoutIdentifier: number) => {
+    state.refreshTokenInterval = timeoutIdentifier
+  },
+  UNSET_REFRESH_INTERVAL: (state) => {
+    if (state.refreshTokenInterval) {
+      clearTimeout(state.refreshTokenInterval)
+      state.refreshTokenInterval = 0
+    }
   }
 }
 
 export const actions: ActionTree<AuthState, RootState> = {
 
-  setCredentials({ commit }, { token, expiresAt}) {
+  async setCredentials({ state, commit, dispatch }, { token, expiresAt }): Promise<void> {
     commit('SET_CREDENTIALS', { token, expiresAt })
     commit('SET_FLAGS', { token })
+
+    if (!state.refreshTokenInterval) {
+
+      const diff = new Date(expiresAt).getTime() - new Date().getTime()
+      if (diff < 1) {
+        return
+      }
+
+      const refreshLogicFunc = async () => {
+
+        if (state.refreshTokenInterval) {
+          return
+        }
+
+        let refreshOffset = Number(process.env.jwt_refresh_offset) * 1000
+        if (!refreshOffset) {
+          refreshOffset = 10000
+        }
+
+        const refresh = async () => {
+          await dispatch('refresh', { token })
+          refreshLogicFunc()
+        }
+        if (refreshOffset >= diff) {
+          return await refresh()
+        }
+        const timeoutIdentifier = setTimeout(refresh, diff - refreshOffset)
+        commit('SET_REFRESH_INTERVAL', timeoutIdentifier)
+      }
+
+      await refreshLogicFunc()
+    }
   },
 
   setUserdata({ commit }, { email, name }) {
     commit('SET_USERDATA', { email, name })
   },
 
-  setCookieTokenFromState({ state }) {
-    const jwtOffset = Number(process.env.jwt_offset) || 0
-    const uselessTokenDate = new Date(new Date().getTime() + state.expiresAt + jwtOffset * 60 * 1000);
-    Cookie.set('token', state.token, { expires: uselessTokenDate})
-    Cookie.set('token_expires_at', state.expiresAt, { expires: uselessTokenDate})
-  },
-
-  setStateTokenFromCookie({ commit }) {
-    const token = Cookie.get('token')
-    const expiresAt = Cookie.get('token_expires_at')
-    commit('SET_CREDENTIALS', { token, expiresAt })
-  },
-
   logout ({ commit }) {
     commit('SET_CREDENTIALS', { token: '', expiresAt: '' })
     commit('SET_USERDATA', { email: '', name: '' })
-    Cookie.remove('token')
-    Cookie.remove('token_expires_at')
+    window.localStorage.removeItem(<string>process.env.ls_token_key)
+    window.localStorage.removeItem(<string>process.env.ls_expires_key)
+    commit('UNSET_REFRESH_INTERVAL')
   },
 
   async fetchAndSetUserdata({ dispatch, commit }, { token }): Promise<Boolean> {
@@ -96,7 +125,7 @@ export const actions: ActionTree<AuthState, RootState> = {
     }
   },
 
-  async refresh({ commit }, { token, cookie = false }): Promise<Boolean> {
+  async refresh({ commit }, { token }): Promise<Boolean> {
     try {
       let response = await this.$axios.post('auth/refresh', {}, {
         headers: {
@@ -104,12 +133,6 @@ export const actions: ActionTree<AuthState, RootState> = {
         }
       })
       commit('SET_CREDENTIALS', { token: response.data.token, expiresAt: response.data.expires_at })
-      if (cookie) {
-        const jwtOffset = Number(process.env.jwt_offset) || 0
-        const uselessTokenDate = new Date(new Date().getTime() + response.data.expires_a + jwtOffset * 60 * 1000);
-        Cookie.set('token', response.data.token, { expires: uselessTokenDate})
-        Cookie.set('token_expires_at', response.data.expires_at, { expires: uselessTokenDate})
-      }
       return true
     } catch (err) {
       return false

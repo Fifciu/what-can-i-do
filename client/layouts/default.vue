@@ -45,7 +45,7 @@
           </a-breadcrumb-item>
         </a-breadcrumb>
         <div :style="{ background: '#fff', height: '100%' }">
-          <nuxt @loggedIn="refreshTimeoutFunc"/>
+          <nuxt/>
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
@@ -122,62 +122,6 @@
 
               return items
           }
-      },
-
-      watch: {
-          isLoggedIn (isLoggedIn) {
-              if (isLoggedIn) {
-                  if (this.refreshTimeout) {
-                      clearTimeout(this.refreshTimeout)
-                      this.refreshTimeout = null
-                  }
-                  this.refreshTimeoutFunc()
-              }
-          }
-      },
-
-      methods: {
-          logout () {
-              if (this.refreshTimeout) {
-                  clearTimeout(this.refreshTimeout)
-                  this.refreshTimeout = null
-              }
-              this.$store.dispatch('auth/logout')
-              this.$router.push('/')
-          },
-          async refreshTimeoutFunc () {
-              if (this.isLoggedIn) {
-                  const Cookie = await import('js-cookie')
-                  let expiryDate = Cookie.get('token_expires_at')
-                  if (!expiryDate) {
-                      this.logout()
-                      return
-                  }
-                  expiryDate = new Date(expiryDate)
-                  const diff = expiryDate - new Date()
-                  if (diff < 1) {
-                      return
-                  }
-                  let refreshOffset = process.env.jwt_refresh_offset * 1000
-                  if (!refreshOffset) {
-                      refreshOffset = 10000
-                  }
-
-                  const refresh = async () => {
-                      await this.$store.dispatch('auth/refresh', { token: this.$store.getters['auth/token'], cookie: true })
-                      this.refreshTimeoutFunc()
-                  }
-                  if (refreshOffset >= diff) {
-                      await refresh()
-                      return
-                  }
-                  this.refreshTimeout = setTimeout(refresh, diff - refreshOffset)
-              }
-          }
-      },
-
-      mounted() {
-          this.refreshTimeoutFunc()
       }
   }
 </script>
