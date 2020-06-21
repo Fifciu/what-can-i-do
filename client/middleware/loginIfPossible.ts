@@ -12,7 +12,7 @@ const loginIfPossibleMiddleware: Middleware = async ({ store }) => {
       expiresAt
     })
 
-    if (!store.state.auth.user.email || !store.state.auth.user.name) {
+    if (token && (!store.state.auth.user.email || !store.state.auth.user.name)) {
       // request to post /me
       const success = await store.dispatch('auth/fetchAndSetUserdata', {
         token
