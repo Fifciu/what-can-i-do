@@ -5,7 +5,7 @@
         <a-icon type="apple" />
         Public
       </span>
-      <ProblemIdeas :ideas="ideas" />
+      <ProblemIdeas :ideas="ideas" @vote="$emit('vote', $event)"/>
     </a-tab-pane>
     <a-tab-pane key="2">
       <span slot="tab">
@@ -15,7 +15,7 @@
       <ProblemIdeas :ideas="ideas" moderable/>
     </a-tab-pane>
   </a-tabs>
-  <ProblemIdeas :ideas="ideas" v-else />
+  <ProblemIdeas :ideas="ideas" v-else @vote="$emit('vote', $event)"/>
 </template>
 
 <script>

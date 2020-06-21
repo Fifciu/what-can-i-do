@@ -13,6 +13,7 @@
       <ProblemIdeasWrapper
         v-if="problem.ideas && !!problem.ideas.length"
         :ideas="problem.ideas"
+        @vote="afterVote"
       />
       <div
         v-else
@@ -41,7 +42,7 @@
             </nuxt-link>
           </a-button>
         </div>
-        <a-button type="primary" class="problem__add-btn" @click.native="onclickAddIdea" v-else>
+        <a-button type="primary" class="problem__add-btn" @click.native="showAddIdea = true" v-else>
           <template v-if="addedIdea">Add another idea</template>
           <template v-else>Add an idea</template>
         </a-button>
@@ -68,6 +69,18 @@
         computed: {
             isLoggedIn () {
                 return this.$store.getters['auth/isLoggedIn']
+            }
+        },
+        methods: {
+            afterVote ({ ideaId, delta }) {
+                const idea = this.problem.ideas.find(idea => idea.id == ideaId)
+                if (idea) {
+                    if (idea.my_vote != 0) {
+                        idea.score -= idea.my_vote
+                    }
+                    idea.score += delta
+                    idea.my_vote = delta
+                }
             }
         },
         async asyncData ({ store, params, error, $axios }) {

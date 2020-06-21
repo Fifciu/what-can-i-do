@@ -17,7 +17,7 @@
             <template v-else>
               <span key="comment-basic-like">
                 <a-tooltip title="Like">
-                  <a-icon type="like" :theme="item.my_vote == 1 ? 'filled' : 'outlined'" @click="like" />
+                  <a-icon type="like" :theme="item.my_vote == 1 ? 'filled' : 'outlined'" @click="item.my_vote != 1 ? like(item.id) : null" />
                 </a-tooltip>
               </span>
               <span style="padding: 0 18px 0 8px; cursor: auto">
@@ -28,7 +28,7 @@
                   <a-icon
                     type="dislike"
                     :theme="item.my_vote == -1 ? 'filled' : 'outlined'"
-                    @click="dislike"
+                    @click="item.my_vote != -1 ? dislike(item.id) : null"
                   />
                 </a-tooltip>
               </span>
@@ -58,6 +58,7 @@
 <script>
     export default {
         name: "ProblemIdea",
+
         props: {
             ideas: {
                 type: Array,
@@ -66,6 +67,44 @@
             moderable: {
                 type: Boolean,
                 default: false
+            }
+        },
+
+        computed: {
+            isLoggedIn () {
+                return this.$store.getters['user/isLoggedIn']
+            }
+        },
+
+        methods: {
+            async like (idea_id) {
+                await this.vote(idea_id, 1)
+            },
+            async dislike (idea_id) {
+                await this.vote(idea_id, -1)
+            },
+            async vote (ideaId, delta) {
+              try {
+                  let { data } = this.$axios.post('/vote', {
+                      idea_id: ideaId,
+                      delta
+                  }, {
+                      headers: {
+                          'Authorization': `Bearer ${this.$store.state.auth.token}`
+                      }
+                  })
+                  // TODO Update in vuex state
+                  this.$emit('vote', {
+                      ideaId,
+                      delta
+                  })
+
+              } catch (err) {
+                  this.$notification.error({
+                      message: 'Error',
+                      description: err.response.data.message
+                  });
+              }
             }
         }
     }

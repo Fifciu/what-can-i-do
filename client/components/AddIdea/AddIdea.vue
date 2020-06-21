@@ -9,8 +9,6 @@
   <a-form :form="form" v-else class="problem__add-ideas-form">
     <h2>New idea</h2>
     <a-form-item
-      :label-col="formItemLayout.labelCol"
-      :wrapper-col="formItemLayout.wrapperCol"
       label="Action's description"
     >
       <a-textarea
@@ -28,8 +26,6 @@
       />
     </a-form-item>
     <a-form-item
-      :label-col="formItemLayout.labelCol"
-      :wrapper-col="formItemLayout.wrapperCol"
       label="Result's description"
     >
       <a-textarea
@@ -47,8 +43,6 @@
       />
     </a-form-item>
     <a-form-item
-      :label-col="formItemLayout.labelCol"
-      :wrapper-col="formItemLayout.wrapperCol"
       label="Money Price"
     >
       <a-input-number
@@ -62,8 +56,6 @@
       />
     </a-form-item>
     <a-form-item
-      :label-col="formItemLayout.labelCol"
-      :wrapper-col="formItemLayout.wrapperCol"
       label="Time price (minutes)"
     >
       <a-input-number
@@ -78,19 +70,12 @@
 </template>
 
 <script>
-    const formItemLayout = {
-        labelCol: { span: 4 },
-        wrapperCol: { span: 8 },
-    };
-    const formTailLayout = {
-        labelCol: { span: 4 },
-        wrapperCol: { span: 8, offset: 4 },
-    };
-
     export default {
         name: "AddIdea",
         data () {
             return {
+                form: this.$form.createForm(this),
+
                 showAddIdea: true,
                 addedIdea: false,
                 isAddingIdea: false
