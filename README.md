@@ -51,6 +51,7 @@ Idea:
 - [ ] Moderator's actions support
 - [x] Disable cors on dev https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
 - [ ] Disable cors on prod https://blog.bitsrc.io/how-and-why-you-should-avoid-cors-in-single-page-apps-db25452ad2f8
+- [ ] Load balance - https://codeburst.io/load-balancing-go-api-with-docker-nginx-digital-ocean-d7f05f7c9b31
 
 ## Analytic
 - [ ] Attach simple google analytics to know what happens there
