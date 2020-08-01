@@ -85,3 +85,17 @@ cat backup.sql | docker exec -i <container_id> /usr/bin/mysql -u root --password
 ```
 
 As `container_id` put mariadb container ID. You can get it by using `docker ps` command with enabled db.
+
+## How to launch
+```
+# Launching DB + PHPMyAdmin
+ cd server;
+ docker-compose up;
+
+# Launching Rest API
+ ./air
+
+# Launching PWA
+ cd client;
+ yarn dev;
+```
