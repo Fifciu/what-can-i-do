@@ -17,20 +17,22 @@ Header: "Coronavirus"
 - Ideas ranking
 - [x] Show problem's name and description
 - [x] Show ideas
-- [ ] Sort ideas by ratings
+- [x] Sort ideas by ratings
 - [x] Possible to add an idea
-- [ ] Possible to rate idea +/-
+- [x] Possible to rate idea +/-
 Idea:
 - [x] What can I do?
 - [x] Effects
 - [ ] Source/s
-- [ ] Vote up
-- [ ] Vote down
+- [x] Vote up
+- [x] Vote down
 - [x] Average money price
 - [x] Average time price
 
-- [ ] MODERATOR: Tab with not accepted ideas
-- [ ] MODERATOR: Tab with not accepted problems
+- [x] MODERATOR: View - Tab with not accepted ideas
+- [ ] MODERATOR: Logic - Tab with not accepted ideas
+- [ ] MODERATOR: View - Tab with not accepted problems
+- [ ] MODERATOR: Logic - Tab with not accepted problems
 
 - [x] Possible to add a problem
 
@@ -44,7 +46,7 @@ Idea:
 - [ ] Take care of Lighthouse audits
 
 ## Backend
-- [ ] Safety condition for token without "Bearer" phrase
+- [x] Safety condition for token without "Bearer" phrase
 - [ ] Varnish cache in front of API
 - [ ] Autoinvalidating by tags in Varnish
 - [x] Vote actions support
@@ -75,3 +77,11 @@ Idea:
 - [ ] Unit tests for Backend
 - [ ] E2E for Frontend
 - [ ] Unit tests for Frontend
+
+## Helpers
+Import database from file to container:
+```
+cat backup.sql | docker exec -i <container_id> /usr/bin/mysql -u root --password=qwerty whatcanido
+```
+
+As `container_id` put mariadb container ID. You can get it by using `docker ps` command with enabled db.
