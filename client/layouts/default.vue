@@ -55,8 +55,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
   export default {
+    watch: {
+      modalVisibility(value) {
+        const el = document.querySelector('body')
+        if (value) el.classList.add('no-scroll')
+        else el.classList.remove('no-scroll')
+      }
+    },
+
       computed: {
+        ...mapState({
+          modalVisibility: state => state.ui.modalVisibility
+        }),
           isLoggedIn () {
               return this.$store.getters['auth/isLoggedIn']
           },

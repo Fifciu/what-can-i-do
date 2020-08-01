@@ -11,7 +11,7 @@
             <template v-if="moderable">
               <a-button-group>
                 <a-button type="primary">Accept</a-button>
-                <a-button type="danger">Discard</a-button>
+                <a-button type="danger" @click="discard">Discard</a-button>
               </a-button-group>
             </template>
             <template v-else>
@@ -52,12 +52,24 @@
           </a-tooltip>
         </a-comment>
       </a-list-item>
+
+      <BaseModal
+        v-if="modalVisibility"
+        title="Review feedback"
+      />
+
     </a-list>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
     export default {
-        name: "ProblemIdea",
+        name: "ProblemIdeas",
+
+      components: {
+          BaseModal: () => import('~/components/Base/BaseModal/BaseModal.vue')
+      },
 
         props: {
             ideas: {
@@ -71,6 +83,9 @@
         },
 
         computed: {
+          ...mapState({
+            modalVisibility: state => state.ui.modalVisibility
+          }),
             isLoggedIn () {
                 return this.$store.getters['user/isLoggedIn']
             }
@@ -105,7 +120,10 @@
                       description: err.response.data.message
                   });
               }
-            }
+            },
+          discard () {
+              this.$store.dispatch('ui/changeModalVisibility', true)
+          }
         }
     }
 </script>
