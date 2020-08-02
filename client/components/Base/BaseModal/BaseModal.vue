@@ -8,7 +8,7 @@
     @cancel="handleCancel"
     class="base-modal"
   >
-    <slot name="modalContent" />
+    <a-textarea placeholder="Why do you want to discard this idea?" allow-clear />
   </a-modal>
 </template>
 
@@ -53,4 +53,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.base-modal {
+  .ant-modal-header,
+  .ant-modal-footer {
+    border: none;
+  }
+}
+</style>
 
