@@ -55,6 +55,7 @@
       <BaseModal
         v-if="modalVisibility"
         title="Review feedback"
+        placeholder="Why do you want to discard this idea?"
       />
     </a-layout>
 </template>

@@ -8,7 +8,7 @@
     @cancel="handleCancel"
     class="base-modal"
   >
-    <a-textarea placeholder="Why do you want to discard this idea?" allow-clear />
+    <a-textarea :placeholder="placeholder" allow-clear />
   </a-modal>
 </template>
 
@@ -20,7 +20,6 @@ export default {
 
   data() {
     return {
-      ModalText: 'Content of the modal',
       visible: false,
       confirmLoading: false,
     };
@@ -28,6 +27,10 @@ export default {
 
   props: {
     title: {
+      type: String,
+      require: true
+    },
+    placeholder: {
       type: String,
       require: true
     }
