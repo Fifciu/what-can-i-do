@@ -51,6 +51,11 @@
       <a-layout-footer style="text-align: center">
         Whatcanido.club ©2020 Created by <a href="https://fifciuu.com" target="_blank">Fifciuu</a>
       </a-layout-footer>
+
+      <BaseModal
+        v-if="modalVisibility"
+        title="Review feedback"
+      />
     </a-layout>
 </template>
 
@@ -58,6 +63,10 @@
 import { mapState } from 'vuex'
 
   export default {
+  components: {
+    BaseModal: () => import('~/components/Base/BaseModal/BaseModal.vue')
+  },
+
     watch: {
       modalVisibility(value) {
         const el = document.querySelector('body')

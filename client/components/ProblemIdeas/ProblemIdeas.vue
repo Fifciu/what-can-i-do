@@ -52,24 +52,13 @@
           </a-tooltip>
         </a-comment>
       </a-list-item>
-
-      <BaseModal
-        v-if="modalVisibility"
-        title="Review feedback"
-      />
-
     </a-list>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 
     export default {
         name: "ProblemIdeas",
-
-      components: {
-          BaseModal: () => import('~/components/Base/BaseModal/BaseModal.vue')
-      },
 
         props: {
             ideas: {
@@ -83,9 +72,6 @@ import { mapState } from 'vuex'
         },
 
         computed: {
-          ...mapState({
-            modalVisibility: state => state.ui.modalVisibility
-          }),
             isLoggedIn () {
                 return this.$store.getters['user/isLoggedIn']
             }
