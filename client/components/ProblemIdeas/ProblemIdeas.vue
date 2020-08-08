@@ -11,7 +11,7 @@
             <template v-if="moderable">
               <a-button-group>
                 <a-button type="primary">Accept</a-button>
-                <a-button type="danger" @click="discard">Discard</a-button>
+                <a-button type="danger" @click="discard(item.id)">Discard</a-button>
               </a-button-group>
             </template>
             <template v-else>
@@ -107,13 +107,28 @@
                   });
               }
             },
-          discard () {
-              this.$store.dispatch('ui/changeModalVisibility', true)
+          discard (id) {
+            this.$store.dispatch('ui/changeModalVisibility', true)
+            this.$store.dispatch('ui/onSubmitFromModal', async (message) => {
+              try {
+                this.$store.dispatch("ui/changeButtonLoader", true)
+                await this.$axios.post(`/ideas/${id}/review`, {
+                  accepted: false,
+                  message
+                }, {
+                  headers: {
+                    'Authorization': `Bearer ${this.$store.state.auth.token}`
+                  }
+                })
+              } catch (err) {
+                this.$notification.error({
+                  message: 'Something went wrong 😥',
+                  description: err.response.data.message
+                });
+              }
+              this.$store.dispatch("ui/changeButtonLoader", false)
+            })
           }
         }
     }
 </script>
-
-<style scoped>
-
-</style>

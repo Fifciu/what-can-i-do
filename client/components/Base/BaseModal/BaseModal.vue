@@ -2,13 +2,14 @@
   <a-modal
     :title="title"
     :visible="modalVisibility"
-    :confirm-loading="confirmLoading"
+    :confirm-loading="modalButtonLoader"
+    okText="Send"
     :centered="true"
     @ok="handleOk"
     @cancel="handleCancel"
     class="base-modal"
   >
-    <a-textarea :placeholder="placeholder" allow-clear />
+    <slot name="content" />
   </a-modal>
 </template>
 
@@ -18,19 +19,8 @@ import { mapState } from 'vuex'
 export default {
   name: "BaseModal",
 
-  data() {
-    return {
-      visible: false,
-      confirmLoading: false,
-    };
-  },
-
   props: {
     title: {
-      type: String,
-      require: true
-    },
-    placeholder: {
       type: String,
       require: true
     }
@@ -38,17 +28,14 @@ export default {
 
   computed: {
     ...mapState({
-      modalVisibility: state => state.ui.modalVisibility
+      modalVisibility: state => state.ui.modalVisibility,
+      modalButtonLoader: state => state.ui.modalButtonLoader
     }),
   },
 
   methods: {
     handleOk() {
-      this.confirmLoading = true;
-      setTimeout(() => {
-        this.$store.dispatch('ui/changeModalVisibility', false)
-        this.confirmLoading = false;
-      }, 2000);
+      this.$emit('handleOk')
     },
     handleCancel() {
       this.$store.dispatch('ui/changeModalVisibility', false)

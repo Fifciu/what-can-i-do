@@ -55,8 +55,12 @@
       <BaseModal
         v-if="modalVisibility"
         title="Review feedback"
-        placeholder="Why do you want to discard this idea?"
-      />
+        @handleOk="onSubmitFromModal"
+      >
+        <template #content>
+          <a-textarea placeholder="Why do you want to discard this idea?" allow-clear v-model="modalMessage" />
+        </template>
+      </BaseModal>
     </a-layout>
 </template>
 
@@ -64,6 +68,11 @@
 import { mapState } from 'vuex'
 
   export default {
+  data() {
+    return {
+      modalMessage: ''
+    }
+  },
   components: {
     BaseModal: () => import('~/components/Base/BaseModal/BaseModal.vue')
   },
@@ -145,7 +154,19 @@ import { mapState } from 'vuex'
 
               return items
           }
+      },
+
+    methods: {
+      onSubmitFromModal () {
+        if (!this.modalMessage) {
+          this.$notification.error({
+            message: 'Please provide a valid message',
+          });
+          return
+        }
+        this.$store.state.ui.onSubmitFromModal(this.modalMessage)
       }
+    }
   }
 </script>
 
