@@ -77,6 +77,12 @@ func GetMostPopularProblems(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, response)
 }
 
+func GetProblemsToReview(w http.ResponseWriter, r *http.Request) {
+	response := u.Status(true)
+	response["problems"] = models.GetProblemsToReview()
+	u.Respond(w, response)
+}
+
 func AddProblem(w http.ResponseWriter, r *http.Request) {
 	problem := &models.Problem{}
 	err := json.NewDecoder(r.Body).Decode(problem)
