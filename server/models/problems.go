@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/gosimple/slug"
+	"errors"
 )
 
 type Problem struct {
@@ -25,6 +26,10 @@ func (problem *Problem) SingularName() string {
 
 func (problem *Problem) PluralName() string {
 	return "problems"
+}
+
+func (problem *Problem) GetNewInstance() ResolvableEntity {
+	return &Problem{}
 }
 
 func GetAllProblems() []*Problem {
@@ -155,4 +160,21 @@ func (problem *Problem) Save(userId uint, name string, description string) bool 
 		return false
 	}
 	return true
+}
+
+func (problem *Problem) Resolve() error {
+	existingProblem := &Problem{}
+	GetDB().Table("problems").Select("*").Where("id = ?", problem.ID).First(existingProblem)
+	if existingProblem.ID < 1 {
+		return errors.New("Problem with this ID does not exist")
+	}
+	if existingProblem.IsPublished {
+		return errors.New("This problem is already published")
+	}
+	existingProblem.IsPublished = true
+	d := GetDB().Save(existingProblem)
+	if d.Error != nil {
+		return d.Error
+	}
+	return nil
 }

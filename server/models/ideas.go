@@ -152,3 +152,25 @@ func (idea *Idea) SetUserId(userId uint) {
 func (idea *Idea) GetNewInstance() DatabaseType {
 	return &Idea{}
 }
+
+func (idea *Idea) Resolve() error {
+	existingIdea := &Idea{}
+	GetDB().
+		Table("ideas").
+		Select("*").
+		Where("id = ?", idea.ID).
+		First(existingIdea)
+	if existingIdea.ID < 1 {
+		return errors.New("This idea does not exist")
+	}
+	if existingIdea.IsPublished {
+		return errors.New("This idea is already published")
+	}
+
+	existingIdea.IsPublished = true
+	d := GetDB().Save(existingIdea)
+	if d.Error != nil {
+		return d.Error
+	}
+	return nil
+}

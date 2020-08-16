@@ -3,7 +3,7 @@ vcl 4.0;
 import std;
 
 acl purge {
-  "host.docker.internal";   // IP which can BAN cache - it should be PWA's IP
+  "host.docker.internal";
 }
 
 backend default {
