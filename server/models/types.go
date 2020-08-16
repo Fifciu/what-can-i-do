@@ -28,3 +28,8 @@ type DatabaseType interface {
 	Save() error
 	GetNewInstance() DatabaseType
 }
+
+type ResolvableEntity interface {
+	GetNewInstance() ResolvableEntity
+	Resolve() error
+}

@@ -68,6 +68,15 @@ func main() {
 	router.Handle("/ideas/mine",
 		middlewares.AuthUser(controllers.GetMineFactory(&models.Idea{}))).Methods("POST")
 
+	//// Moderator - Review idea
+	// TODO: Prevention mechanism for multiple reviews
+	router.Handle("/ideas/{problem_id:[0-9]+}/review",
+		middlewares.AuthUser(middlewares.Moderator(controllers.ResolveFactory("idea")))).Methods("POST")
+	//// Moderator - Review problem
+	// TODO: Prevention mechanism for multiple reviews
+	router.Handle("/problems/{problem_id:[0-9]+}/review",
+		middlewares.AuthUser(middlewares.Moderator(controllers.ResolveFactory("problem")))).Methods("POST")
+
 	// Sign in/up's view - Init auth and get redirect link
 	router.HandleFunc("/auth/init/{provider}",
 		controllers.InitAuth).Methods("POST")
