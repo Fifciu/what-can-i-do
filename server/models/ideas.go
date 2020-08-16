@@ -10,9 +10,11 @@ type Idea struct {
 	Score int `json:"score" gorm:"-" `
 	MyVote int `json:"my_vote" gorm:"-" `
 	ProblemName string `json:"problem_name" gorm:"-" `
+	Reviews int `json:"reviews" gorm:"-" `
 	UserID   uint    `json:"user_id"`
 	AuthorName string `gorm:"-" json:"author_name"`
 	IsPublished   bool    `json:"is_published"`
+	IsReviewed   bool    `json:"is_reviewed" gorm:"-" `
 	ActionDescription   string    `json:"action_description"`
 	ResultsDescription   string    `json:"results_description"`
 	MoneyPrice float32 `json:"money_price"`
@@ -116,13 +118,18 @@ func (idea *Idea) GetByUserId(userId uint) []UserCreatedEntity {
 	ideas := []*Idea{}
 	GetDB().
 		Table("ideas").
-		Select("problems.name AS problem_name, ideas.id, ideas.problem_id, ideas.action_description, ideas.results_description, ideas.money_price, ideas.time_price, ideas.is_published").
+		Select("idea_reviews.id AS reviews, problems.name AS problem_name, ideas.id, ideas.problem_id, ideas.action_description, ideas.results_description, ideas.money_price, ideas.time_price, ideas.is_published").
 		Joins("INNER JOIN problems ON ideas.problem_id = problems.id").
+		Joins("LEFT JOIN idea_reviews ON ideas.id = idea_reviews.idea_id").
 		Where("ideas.user_id = ?", userId).
+		Group("idea_reviews.idea_id").
 		Scan(&ideas)
 
 	uces := make([]UserCreatedEntity, len(ideas))
 	for i, idea := range ideas {
+		if idea.Reviews > 0 {
+			idea.IsReviewed = true
+		}
 		uces[i] = idea
 	}
 	return uces

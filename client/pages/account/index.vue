@@ -20,6 +20,7 @@
             {{ item.action_description }} against <strong>{{ item.problem_name }}</strong>
           </div>
           <a-icon type="check" v-if="item.is_published"/>
+          <a-icon type="warning" v-else-if="item.is_reviewed"/>
           <a-icon type="clock-circle" v-else/>
         </div>
       </a-list-item>

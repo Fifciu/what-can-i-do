@@ -16,6 +16,37 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `idea_reviews`
+--
+
+DROP TABLE IF EXISTS `idea_reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `idea_reviews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reviewer_id` int(11) NOT NULL,
+  `idea_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `reviewer_id` (`reviewer_id`),
+  KEY `idea_id` (`idea_id`),
+  CONSTRAINT `idea_reviewer_id` FOREIGN KEY (`reviewer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reviewed_idea_id` FOREIGN KEY (`idea_id`) REFERENCES `ideas` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `idea_reviews`
+--
+
+LOCK TABLES `idea_reviews` WRITE;
+/*!40000 ALTER TABLE `idea_reviews` DISABLE KEYS */;
+INSERT INTO `idea_reviews` VALUES (2,1,14,'1234555','0000-00-00 00:00:00'),(3,1,15,'1234555','0000-00-00 00:00:00');
+/*!40000 ALTER TABLE `idea_reviews` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ideas`
 --
 
@@ -45,8 +76,39 @@ CREATE TABLE `ideas` (
 
 LOCK TABLES `ideas` WRITE;
 /*!40000 ALTER TABLE `ideas` DISABLE KEYS */;
-INSERT INTO `ideas` VALUES (14,7,1,1,'Stay home','You are decreasing probability of getting sick and not taking part in virus\' spreading',0.00,-1),(15,7,1,1,'Trolololo','Lolololo',12.00,165),(16,7,1,0,'nadsdasdasdsdsdssdasp','asasdasdsdsdasddasdas',12.23,0),(17,7,1,0,'adsdasdasdasasdasdas','sadasdasdasdasdasdasd',0.00,0),(18,7,1,0,'Asdsfadjkashkdajshkdhasdasdasasjaksdhjashjdashjkdahjksddsd','Asdsfadjkashkdajshkdhasdasdasasjaksdhjashjdashjkdahjksddsd',0.00,0),(19,7,1,0,'zxnbcxmcnzbncxzbnm','adhashjdashdashjdahjkds',1.22,3);
+INSERT INTO `ideas` VALUES (14,7,1,1,'Stay home','You are decreasing probability of getting sick and not taking part in virus\' spreading',0.00,-1),(15,7,1,0,'Trolololo','Lolololo',12.00,165),(16,7,1,1,'nadsdasdasdsdsdssdasp','asasdasdsdsdasddasdas',12.23,0),(17,7,1,0,'adsdasdasdasasdasdas','sadasdasdasdasdasdasd',0.00,0),(18,7,1,0,'Asdsfadjkashkdajshkdhasdasdasasjaksdhjashjdashjkdahjksddsd','Asdsfadjkashkdajshkdhasdasdasasjaksdhjashjdashjkdahjksddsd',0.00,0),(19,7,1,0,'zxnbcxmcnzbncxzbnm','adhashjdashdashjdahjkds',1.22,3);
 /*!40000 ALTER TABLE `ideas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `problem_reviews`
+--
+
+DROP TABLE IF EXISTS `problem_reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `problem_reviews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reviewer_id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `reviewer_id` (`reviewer_id`),
+  KEY `problem_id` (`problem_id`),
+  CONSTRAINT `problem_reviewer_id` FOREIGN KEY (`reviewer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reviewed_problem_id` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `problem_reviews`
+--
+
+LOCK TABLES `problem_reviews` WRITE;
+/*!40000 ALTER TABLE `problem_reviews` DISABLE KEYS */;
+INSERT INTO `problem_reviews` VALUES (1,1,8,'1234555','0000-00-00 00:00:00');
+/*!40000 ALTER TABLE `problem_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -78,7 +140,7 @@ CREATE TABLE `problems` (
 
 LOCK TABLES `problems` WRITE;
 /*!40000 ALTER TABLE `problems` DISABLE KEYS */;
-INSERT INTO `problems` VALUES (7,1,'Coronavirus','corona','Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',1,107),(8,14,'Test','','Ungabungasdasdasdasd',0,0),(10,14,'Test','','Ungabungasdasdasdasd',0,0),(11,14,'Test','','Ungabungasdasdasdasd',0,0),(12,14,'Test','','Ungabungasdasdasdasd',0,0),(13,14,'Test','','Ungabungasdasdasdasd',0,0),(14,14,'Test','','Ungabungasdasdasdasd',0,0),(15,14,'Test','','Ungabungasdasdasdasd',0,0),(16,14,'Test','','Ungabungasdasdasdasd',0,0),(17,14,'Test','','Ungabungasdasdasdasd',0,0),(18,1,'sadsdasdsdasdas','sadsdasdsdasdas','asdasdasdasdasdasdasdas',0,0),(19,1,'sasdasd','sasdasd','dasdasdasdasdasdasdas',0,0),(20,1,'sfsdasd','sfsdasd','adsdasdsadasdasdasdas',0,0);
+INSERT INTO `problems` VALUES (7,1,'Coronavirus','corona','Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',1,109),(8,1,'Test','','Ungabungasdasdasdasd',1,0),(10,14,'Test','','Ungabungasdasdasdasd',0,0),(11,14,'Test','','Ungabungasdasdasdasd',0,0),(12,14,'Test','','Ungabungasdasdasdasd',0,0),(13,14,'Test','','Ungabungasdasdasdasd',0,0),(14,14,'Test','','Ungabungasdasdasdasd',0,0),(15,14,'Test','','Ungabungasdasdasdasd',0,0),(16,14,'Test','','Ungabungasdasdasdasd',0,0),(17,14,'Test','','Ungabungasdasdasdasd',0,0),(18,1,'sadsdasdsdasdas','sadsdasdsdasdas','asdasdasdasdasdasdasdas',0,0),(19,1,'sasdasd','sasdasd','dasdasdasdasdasdasdas',0,0),(20,1,'sfsdasd','sfsdasd','adsdasdsadasdasdasdas',0,0);
 /*!40000 ALTER TABLE `problems` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +159,7 @@ CREATE TABLE `users` (
   `flags` int(3) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +168,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'filip.jdrasik@gmail.com','Filip Jędrasik','google',0),(14,'filipj7@gmail.com','Filip J','google',0);
+INSERT INTO `users` VALUES (1,'filip.jdrasik@gmail.com','Filip Jędrasik','google',1),(14,'filipj7@gmail.com','Filip J','google',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,4 +211,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-05-12 19:44:10
+-- Dump completed on 2020-08-16 15:20:48
