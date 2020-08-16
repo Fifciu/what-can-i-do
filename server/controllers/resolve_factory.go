@@ -1,6 +1,3 @@
-/*
-	Loool
- */
 package controllers
 
 import (
@@ -24,7 +21,13 @@ func ResolveFactory(entityType string) http.HandlerFunc {
 		// add review
 		// update status if needed
 		vars := mux.Vars(r)
-		entityId, err := strconv.Atoi(vars["problem_id"])
+		var entityId int
+		var err error
+		if entityType == "problem" {
+			entityId, err = strconv.Atoi(vars["problem_id"])
+		} else if entityType == "idea" {
+			entityId, err = strconv.Atoi(vars["idea_id"])
+		}
 		response := u.Status(true)
 		if err != nil || entityId < 1 {
 			response = u.Message(false, "Bad request")
