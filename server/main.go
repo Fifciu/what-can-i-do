@@ -83,7 +83,7 @@ func main() {
 	//// Author - Get problem reviews
 	// TODO: Prevention mechanism for multiple reviews
 	router.Handle("/problems/{problem_id:[0-9]+}/reviews",
-		middlewares.AuthUser(http.HandlerFunc(controllers.GetIdeaReviews))).Methods("GET")
+		middlewares.AuthUser(http.HandlerFunc(controllers.GetProblemReviews))).Methods("GET")
 
 	//// Moderator - Review idea
 	// TODO: Prevention mechanism for multiple reviews
