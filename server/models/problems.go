@@ -142,6 +142,13 @@ func GetMostPopular() []*Problem {
 	return problems
 }
 
+func GetProblemsToReview() []*Problem {
+	problems := []*Problem{}
+
+	GetDB().Table("problems").Select("*").Where("is_published = 0").Order("id desc").Scan(&problems)
+	return problems
+}
+
 func (problem *Problem) Save(userId uint, name string, description string) bool {
 	// TODO Max requests per time for user
 	existingUnpublishedProblem := &Problem{}

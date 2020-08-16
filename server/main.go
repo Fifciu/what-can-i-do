@@ -38,6 +38,14 @@ func main() {
 	router.HandleFunc("/problems/hot",
 		controllers.GetMostPopularProblems).Methods("GET")
 
+	// Problems to review
+	router.Handle("/problems/review-request",
+		middlewares.AuthUser(middlewares.Moderator(http.HandlerFunc(controllers.GetProblemsToReview)))).Methods("GET")
+
+	// Ideas to review
+	router.Handle("/ideas/review-request",
+		middlewares.AuthUser(middlewares.Moderator(http.HandlerFunc(controllers.GetIdeasToReview)))).Methods("GET")
+
 	//router.HandleFunc("/problems",
 	//	controllers.GetProblems).Methods("GET")
 

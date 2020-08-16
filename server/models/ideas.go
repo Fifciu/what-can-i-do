@@ -1,7 +1,6 @@
 package models
 
 import (
-	//"sort"
 	"errors"
 )
 
@@ -173,4 +172,11 @@ func (idea *Idea) Resolve() error {
 		return d.Error
 	}
 	return nil
+}
+
+func GetIdeasToReview() []*Idea {
+	ideas := []*Idea{}
+
+	GetDB().Table("ideas").Select("*").Where("is_published = 0").Order("id desc").Scan(&ideas)
+	return ideas
 }
