@@ -51,3 +51,15 @@ func (r *ProblemReview) Save(problemId uint, reviewerId uint, message string) er
 	}
 	return nil
 }
+
+func GetProblemReviews(problemId uint, userId uint) []*ProblemReview {
+	reviews := []*ProblemReview{}
+	GetDB().
+		Table("problem_reviews").
+		Select("problem_reviews.*").
+		Joins("INNER JOIN problems ON problems.id = problem_reviews.problem_id").
+		Where("problem_reviews.problem_id = ? AND problems.user_id = ?", problemId, userId).
+		Scan(&reviews)
+
+	return reviews
+}

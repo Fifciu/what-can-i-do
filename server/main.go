@@ -76,9 +76,18 @@ func main() {
 	router.Handle("/ideas/mine",
 		middlewares.AuthUser(controllers.GetMineFactory(&models.Idea{}))).Methods("POST")
 
+	//// Author - Get idea reviews
+	// TODO: Prevention mechanism for multiple reviews
+	router.Handle("/ideas/{idea_id:[0-9]+}/reviews",
+		middlewares.AuthUser(http.HandlerFunc(controllers.GetIdeaReviews))).Methods("GET")
+	//// Author - Get problem reviews
+	// TODO: Prevention mechanism for multiple reviews
+	router.Handle("/problems/{problem_id:[0-9]+}/reviews",
+		middlewares.AuthUser(http.HandlerFunc(controllers.GetProblemReviews))).Methods("GET")
+
 	//// Moderator - Review idea
 	// TODO: Prevention mechanism for multiple reviews
-	router.Handle("/ideas/{problem_id:[0-9]+}/review",
+	router.Handle("/ideas/{idea_id:[0-9]+}/review",
 		middlewares.AuthUser(middlewares.Moderator(controllers.ResolveFactory("idea")))).Methods("POST")
 	//// Moderator - Review problem
 	// TODO: Prevention mechanism for multiple reviews

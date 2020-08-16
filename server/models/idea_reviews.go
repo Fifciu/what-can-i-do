@@ -51,3 +51,15 @@ func (r *IdeaReview) Save(ideaId uint, reviewerId uint, message string) error {
 	}
 	return nil
 }
+
+func GetIdeaReviews(ideaId uint, userId uint) []*IdeaReview {
+	reviews := []*IdeaReview{}
+	GetDB().
+		Table("idea_reviews").
+		Select("idea_reviews.*").
+		Joins("INNER JOIN ideas ON ideas.id = idea_reviews.idea_id").
+		Where("idea_reviews.idea_id = ? AND ideas.user_id = ?", ideaId, userId).
+		Scan(&reviews)
+
+	return reviews
+}
