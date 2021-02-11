@@ -1,5 +1,6 @@
 # What can I do?
 World's issues solutions ranking
+Epicenter are ideas and problems. Everything else is secondary.
 
 ## Frontend
 - [ ] Static generated nuxt app, I have to rewrite this to use localStorage instead of Cookies
