@@ -1,0 +1,13 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "generate-dotenv": "node generate-dotenv/index.js"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "inquirer": "^8.0.0"
+  }
+}

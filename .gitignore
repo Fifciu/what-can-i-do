@@ -11,3 +11,4 @@ test
 jwt-go
 go-sqlmock
 air
+node_modules
