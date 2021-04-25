@@ -15,8 +15,10 @@ const defaults = {
   jwt_ttl: 120000000,
   jwt_offset: 10000,
   api_port: 8090,
+  db_name: 'whatcanido',
   db_user: 'user',
-  db_pass: 'pass'
+  db_pass: 'pass',
+  db_port: 3306
 };
 
 (async () => {
@@ -78,6 +80,11 @@ const defaults = {
     },
     {
       type: 'input',
+      name: 'db_name',
+      message: `What's the name of your MySQL database (${defaults.db_name})?`
+    },
+    {
+      type: 'input',
       name: 'db_user',
       message: `What's the user of your MySQL database (${defaults.db_user})?`
     },
@@ -85,7 +92,12 @@ const defaults = {
       type: 'password',
       name: 'db_pass',
       message: `What's the password of your user in MySQL database (${defaults.db_pass})?`
-    }
+    },
+    {
+      type: 'number',
+      name: 'db_port',
+      message: `On what port your database is listening (${defaults.db_port})?`
+    },
   ]);
 
   values.supported_oauth_providers = values.supported_oauth_providers.map(v => v.toLowerCase());
@@ -111,8 +123,10 @@ jwt_ttl=${resolveValue('jwt_ttl')}
 jwt_offset=${resolveValue('jwt_offset')}
 api_port=${resolveValue('api_port')}
 
+db_name=${resolveValue('db_name')}
 db_user=${resolveValue('db_user')}
 db_pass=${resolveValue('db_pass')}
+db_port=${resolveValue('db_port')}
   `;
 
   const dotEnvPath = path.resolve(__dirname, '../../server') + '/.env';
