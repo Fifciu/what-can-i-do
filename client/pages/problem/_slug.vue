@@ -42,7 +42,7 @@
             </nuxt-link>
           </a-button>
         </div>
-        <a-button type="primary" class="problem__add-btn" @click.native="showAddIdea = true" v-else>
+        <a-button type="primary" class="problem__add-btn" @click.native="showAddIdea = true" v-else-if="!showAddIdea">
           <template v-if="addedIdea">Add another idea</template>
           <template v-else>Add an idea</template>
         </a-button>

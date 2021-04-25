@@ -71,7 +71,7 @@ export default {
   ],
   proxy: {
     '/api': {
-      target: 'http://localhost:8090',
+      target: `http://${process.env.api_host}:${process.env.api_port}`,
       pathRewrite: {
         '^/api' : '/'
       }
@@ -87,7 +87,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.use_varnish === '1' ? `http://${process.env.varnish_host}:${process.env.varnish_port}/` : `http://${process.env.api_host}:${process.env.pwa_port}/api/`
+    baseURL: `http://${process.env.pwa_host}:${process.env.pwa_port}/api/` // cuz of proxy
   },
   /*
   ** Build configuration

@@ -1,14 +1,14 @@
 version: "3.7"
 
 services:
-
   mariadb:
-    image: mariadb:10.4
+    image: mariadb:10.4.8
     restart: always
     volumes:
       - mariadb-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${db_pass}
+      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_DATABASE: ${db_name}
     ports:
       - ${db_port}:3306
 

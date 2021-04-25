@@ -127,6 +127,8 @@
                             });
                         }
                         this.isAddingIdea = false
+                    } else {
+                      console.log(err)
                     }
                 });
             }

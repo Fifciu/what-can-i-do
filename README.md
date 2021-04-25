@@ -100,6 +100,8 @@ As `container_id` put mariadb container ID. You can get it by using `docker ps` 
 
 # Launching Rest API
  ./air
+## or
+ air
 
 # Launching PWA
  cd client;

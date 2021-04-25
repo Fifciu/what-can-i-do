@@ -1,21 +1,22 @@
 <template>
-  <a-tabs default-active-key="1" v-if="isModerator">
-    <a-tab-pane key="1">
-      <span slot="tab">
-        <a-icon type="apple" />
-        Public
-      </span>
-      <ProblemIdeas :ideas="ideas" @vote="$emit('vote', $event)"/>
-    </a-tab-pane>
-    <a-tab-pane key="2">
-      <span slot="tab">
-        <a-icon type="android" />
-        Waiting for review
-      </span>
-      <ProblemIdeas :ideas="ideas" moderable/>
-    </a-tab-pane>
-  </a-tabs>
-  <ProblemIdeas :ideas="ideas" v-else @vote="$emit('vote', $event)"/>
+<!--  <a-tabs default-active-key="1" v-if="isModerator">-->
+<!--    <a-tab-pane key="1">-->
+<!--      <span slot="tab">-->
+<!--        <a-icon type="apple" />-->
+<!--        Public-->
+<!--      </span>-->
+<!--      <ProblemIdeas :ideas="ideas" @vote="$emit('vote', $event)"/>-->
+<!--    </a-tab-pane>-->
+<!--    <a-tab-pane key="2">-->
+<!--      <span slot="tab">-->
+<!--        <a-icon type="android" />-->
+<!--        Waiting for review-->
+<!--      </span>-->
+<!--      <ProblemIdeas :ideas="ideas" moderable/>-->
+<!--    </a-tab-pane>-->
+<!--  </a-tabs>-->
+<!--  <ProblemIdeas :ideas="ideas" v-else @vote="$emit('vote', $event)"/>-->
+  <ProblemIdeas :ideas="ideas" @vote="$emit('vote', $event)"/>
 </template>
 
 <script>
